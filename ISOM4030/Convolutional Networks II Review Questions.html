@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Convolutional Networks II: Review Questions</title>
+<style>
+:root{
+  --bg:#f6f7f5; --surface:#fff; --text:#1d2523; --muted:#5d6966; --line:#dfe4e1;
+  --accent:#0f6b66; --accent-soft:#e3f1ef;
+  --ok:#17693a; --ok-bg:#e4f4ea; --bad:#a3262a; --bad-bg:#fbe9ea;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:28px 18px 80px}
+header h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;margin:14px 0 6px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.bar .prog{margin-left:auto;color:var(--muted);font-size:.9rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 13px;min-height:38px}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:#0b5753;color:#fff}
+button:focus-visible,.opt:focus-within{outline:3px solid #7cc4be;outline-offset:2px}
+h2.topic{font-size:1.1rem;margin:34px 0 4px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px;margin-top:14px}
+.stem{display:flex;gap:10px;font-weight:600;margin:0 0 12px}
+.stem .stxt{min-width:0;flex:1}
+.stem ul{margin:8px 0;padding-left:22px;font-weight:400}
+.stem li{margin:4px 0}
+.stem .n{color:var(--accent);min-width:1.8em}
+.opts{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff}
+.opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.opt:focus-visible{outline:3px solid #7cc4be;outline-offset:2px}
+.opt.correct,.opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong,.opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.otxt{min-width:0;flex:1}
+.code{margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;overflow-x:auto;background:#f1f4f2;border-radius:6px;padding:8px 10px}
+.opt.correct .code{background:#cfeadb}.opt.wrong .code{background:#f6d6d8}
+.bar .prog{font-weight:600;color:var(--text)}
+.opt input{margin-top:5px;accent-color:var(--accent)}
+.opt .ltr{font-weight:700;min-width:1.4em;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.revealed .opt{cursor:default}
+.revealed .opt:hover{background:#fff;border-color:var(--line)}
+.revealed .opt.sel{background:#fff}
+.revealed .opt.correct,.revealed .opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.revealed .opt.wrong,.revealed .opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.tag{margin-left:auto;font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:8px}
+.correct .tag{color:var(--ok)} .wrong .tag{color:var(--bad)}
+.gloss{color:var(--muted);font-weight:400;font-style:normal}
+.stem .gloss{font-weight:400}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.why{margin-top:12px;padding:10px 12px;border-left:4px solid var(--ok);background:var(--ok-bg);border-radius:6px;font-size:.95rem}
+.why[hidden]{display:none}
+footer{margin-top:40px;color:var(--muted);font-size:.9rem}
+@media(max-width:520px){.tag{display:none}.q{padding:14px 12px}}
+@media(prefers-reduced-motion:no-preference){.opt{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Convolutional Networks II: Review Questions</h1>
+  <p>Click an option to check your answer. Options are shuffled each time.</p>
+</header>
+<div class="bar">
+  <button id="shuffleBtn" class="primary">Shuffle again</button>
+  <button id="revealBtn">Show all answers</button>
+  <span class="prog" id="score" aria-live="polite"></span>
+</div>
+<main id="root"></main>
+</div>
+
+<script>
+const DATA = [{"topic":"Topic 9: Convolutional Networks II","items":[{"q":"He et al. describe the degradation problem of deep plain (non-residual) networks as an optimization difficulty rather than overfitting. Which observation justifies this interpretation?","o":["The deeper plain network has higher training error than its shallower counterpart, even though it could in principle represent the shallower network's solution exactly.","The gap between training error and validation error widens as more layers are added.","The deeper plain network has higher validation error than the shallower one.","The deeper plain network has more parameters, so it must be memorizing the training data."],"c":0},{"q":"Which statement best summarizes the characteristic VGG-style design choices?","o":["Stack several 3 × 3 convolutions between pooling layers, halve the spatial size with 2 × 2 max pooling (stride 2), and double the number of channels after each pooling stage.","Use a single 7 × 7 convolution per stage so that each stage reaches the same receptive field with fewer layers, and keep the channel count fixed throughout the network.","Apply 2 × 2 max pooling after every single convolution, halving the number of channels each time so that computation stays constant across stages.","Replace pooling with 1 × 1 convolutions for downsampling, and increase the number of channels only in the final stage before the classifier."],"c":0},{"q":"Compared with a single 7 × 7 convolution, a stack of three 3 × 3 convolutions (each followed by a nonlinearity) over the same C input and output channels:","o":["Has the same 7 × 7 receptive field, applies three nonlinearities instead of one, and uses 27C² weights instead of 49C².","Has the same receptive field and the same number of weights, but is slower because the input must be processed three times.","Has a smaller receptive field (3 × 3 instead of 7 × 7), which is why it needs fewer weights.","Computes exactly the same function as the 7 × 7 convolution, because the three stacked convolutions compose into a single linear map."],"c":0},{"html":true,"q":"Let <i>F</i>(·) denote the learned branch of a residual block. A residual connection computes:","o":["<i>x</i><sup>[<i>l</i>]</sup> = <i>x</i><sup>[<i>l</i>−1]</sup> + <i>F</i>(<i>x</i><sup>[<i>l</i>−1]</sup>)","<i>x</i><sup>[<i>l</i>]</sup> = <i>F</i>(<i>x</i><sup>[<i>l</i>−1]</sup>) + <i>F</i>(<i>x</i><sup>[<i>l</i>−2]</sup>)","<i>x</i><sup>[<i>l</i>]</sup> = <i>F</i>(<i>x</i><sup>[<i>l</i>−1]</sup> + <i>x</i><sup>[<i>l</i>−2]</sup>)","<i>x</i><sup>[<i>l</i>]</sup> = concat(<i>x</i><sup>[<i>l</i>−1]</sup>, <i>F</i>(<i>x</i><sup>[<i>l</i>−1]</sup>))"],"c":0},{"q":"In a Keras residual block, the shortcut and the learned branch are merged with keras.layers.Add(). Which statement about this layer is correct?","o":["It adds its inputs element-wise, so the tensors must have identical shapes (or a projection must be applied to the shortcut first).","It concatenates its inputs along the channel axis, so the output has the sum of the input channel counts.","It averages its inputs, so the output is scaled down by the number of inputs.","It multiplies each input by a trainable weight before summing, so the layer contributes parameters to the model."],"c":0},{"q":"Why are residual blocks typically built with the Keras functional API rather than the Sequential API?","o":["The Sequential API assumes a single linear chain of layers, whereas a residual block requires one tensor to branch into two paths that are later merged.","The Sequential API supports only Dense layers, so convolutional layers cannot be used in it.","The functional API trains faster because it compiles the model into a static graph.","Only the functional API allows weights to be shared between the shortcut path and the learned branch, which residual blocks require."],"c":0},{"q":"Data augmentation (e.g. random flips, crops and rotations applied to training images) is primarily intended to:","o":["Generate label-preserving variations of the training images, so the model learns features that are robust to those transformations and generalizes better.","Be applied to the validation images as well, so that the reported validation accuracy matches the augmented training distribution.","Reduce training time, because the network converges in fewer epochs when it sees more varied images.","Remove the need for regularization such as dropout or weight decay, since the training set becomes effectively infinite."],"c":0},{"q":"You want to use an ImageNet-pretrained CNN for a new classification task with only a few hundred labeled images. Which approach is most appropriate?","o":["Freeze the pretrained convolutional base, replace the classifier head with a new one for your classes, and train only the new head.","Fine-tune all layers end-to-end with the learning rate used for ImageNet training, since more trainable parameters give a better fit.","Keep the pretrained classifier head and retrain only the first few convolutional layers, since those are the most task-specific.","Re-initialize all weights randomly and train from scratch, since ImageNet features will not transfer to a different domain."],"c":0},{"q":"When the target dataset is considerably larger (say, tens of thousands of images), how does the recommended transfer-learning strategy change compared with the small-dataset case?","o":["Unfreeze and fine-tune more of the pretrained layers (possibly the whole network), but with a lower learning rate than when training from scratch.","Freeze more layers, because the larger dataset makes overfitting of the pretrained features more likely.","Discard the pretrained weights entirely, since with enough data the pretrained initialization no longer provides any benefit.","Still train only the new classifier head, but for many more epochs, since the convolutional base should never be modified."],"c":0},{"q":"Why is a lower learning rate typically used when fine-tuning pretrained layers?","o":["The pretrained weights are already a good solution, and large updates could destroy the useful features they encode before the new head has adapted.","A lower learning rate prevents overfitting regardless of dataset size, so it replaces the need for other regularization.","Pretrained layers produce larger gradients than randomly initialized ones, so the learning rate must be scaled down to keep the update size constant.","A lower learning rate is required to keep the BatchNormalization statistics learned on the source dataset from changing."],"c":0},{"q":"Which statement best describes semantic segmentation with a fully convolutional network (FCN)?","o":["The network assigns a class label to every pixel, producing an output whose spatial dimensions match the input (H × W × number of classes).","The network assigns a separate label to each object instance, so pixels belonging to two different cars receive different labels.","The network assigns one label per image; the spatial dimensions are collapsed by global pooling before the classifier.","The network predicts a bounding box and class for each object; pixel-level labels are then obtained by filling each box with its class."],"c":0},{"q":"Which of the following is NOT a benefit of downsampling (pooling or strided convolution) in the encoder of a U-Net?","o":["Preserving fine spatial detail and precise localization of object boundaries.","Increasing the effective field of view, so deeper layers capture larger context.","Reducing computational and memory cost.","Building a hierarchical, progressively coarser feature representation."],"c":0},{"q":"What is the role of the upsampling layers (e.g. transposed convolution) in the decoder of a segmentation network?","o":["To recover a full-resolution prediction map from the lower-resolution, semantically rich encoder features, so that a class can be assigned to every input pixel.","To increase the receptive field of the decoder layers so that they capture more global context.","To reduce the number of channels to the number of classes; the spatial size is left unchanged because the loss is computed at encoder resolution.","To invert the encoder's convolutions exactly, restoring the original input image before classification."],"c":0},{"q":"In a U-Net, skip connections copy encoder feature maps and concatenate them with decoder feature maps at the same resolution. What do they contribute?","o":["They bring back fine spatial detail from the high-resolution encoder layers, which the deeper, coarser layers have lost, so that boundaries can be localized precisely.","They provide the decoder with class probabilities computed by the encoder at each scale, so the decoder only needs to refine them.","They let the decoder bypass the low-resolution bottleneck entirely, so the decoder sees only high-resolution features.","They pass the input image directly to the output, so the network only needs to learn the pixel-wise class differences."],"c":0},{"q":"A semantic segmentation network for K classes takes an H × W × 3 image as input. What is the shape of its final output tensor?","o":["H × W × K — one score per class for every pixel.","H × W × 3 — one score per color channel, matching the input.","H × W × 1 — a single integer class index per pixel, produced directly by the last convolution.","1 × 1 × K — one score per class, which is then broadcast to all pixels."],"c":0},{"q":"In YOLO-style detection the image is divided into an S × S grid. Which statement correctly describes what each grid cell is responsible for and what it predicts?","o":["A cell is responsible for an object only if the object's bounding-box center falls inside it; for each of its boxes it predicts the box coordinates and an objectness score, together with class probabilities.","A cell is responsible for every object that overlaps it at all; it predicts box coordinates for each such object and a single shared class label.","A cell predicts a pixel-level class label for the region it covers; boxes are then formed by grouping adjacent cells with the same label.","A cell predicts only class probabilities; the box coordinates come from a separate region-proposal network applied before the grid."],"c":0},{"q":"In YOLO, the confidence score used to rank a predicted box for class c is commonly computed as:","o":["objectness × P(class c | object) — the probability that the box contains an object, times the probability that the object belongs to class c.","objectness + P(class c | object), so a box with high objectness still scores highly even if the class prediction is uncertain.","max(objectness, P(class c | object)), so the score is governed by whichever prediction is more confident.","P(class c | object) alone; the objectness score only decides whether a box is drawn, not how it is ranked."],"c":0},{"q":"After the detector produces its predictions, non-max suppression (NMS) is applied in order to:","o":["Remove duplicate detections of the same object by discarding boxes that overlap heavily (high IoU) with a higher-scoring box of the same class.","Discard all boxes whose confidence score falls below a fixed threshold.","Merge overlapping boxes into a single box by averaging their coordinates, weighted by confidence.","Suppress grid cells whose objectness score is not the maximum in their neighborhood."],"c":0},{"q":"Which of the following task–output–loss formulations is correct?","o":["Landmark detection: predict a fixed number of (x, y) coordinates for predefined landmarks, trained with an L2 (squared-error) loss on the coordinates.","Object detection: predict a variable number of bounding boxes with class labels, trained with a cross-entropy loss on the class labels only.","Semantic segmentation: predict one class label per image, trained with a cross-entropy loss over image-level labels.","Image captioning: predict a variable-length sequence of words, trained with an L2 loss on the word indices."],"c":0},{"q":"Which of the following models is a fully convolutional network (FCN), i.e. one built entirely from convolutional, pooling and upsampling operations with no fully connected layers?","o":["A U-Net for semantic segmentation, consisting of a convolutional encoder, a convolutional decoder and skip connections.","An image-captioning model that uses a CNN encoder followed by an RNN decoder.","A standard image classifier that uses convolutional layers followed by fully connected layers.","A two-stage detector such as Faster R-CNN, which uses a convolutional backbone followed by RoI pooling and fully connected layers to classify each proposed region and refine its box."],"c":0}]}];
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const root = document.getElementById("root");
+let answered = 0, right = 0;
+
+function updateScore(){
+  document.getElementById("score").textContent = answered ? `Score: ${right} / ${answered}` : "";
+}
+
+function render(){
+  answered = right = 0; updateScore();
+  root.innerHTML = "";
+  let n = 0;
+  DATA.forEach(t => {
+    root.insertAdjacentHTML("beforeend", `<h2 class="topic">${esc(t.topic)}</h2>`);
+    t.items.forEach(it => {
+      n++;
+      const opts = shuffle(it.o.map((text,k)=>({text, ok:k===it.c, html:!!it.html})));
+      const q = document.createElement("section");
+      q.className = "q";
+      q.innerHTML = `<div class="stem"><span class="n">${n}.</span><span class="stxt">${it.html?it.q:esc(it.q)}</span></div>` +
+        `<div class="opts">` + opts.map((o,k)=>`<div class="opt" role="button" tabindex="0" data-c="${o.ok}"><span class="ltr">${"ABCD"[k]}.</span><span class="otxt">${o.text.includes("\n")?`<pre class="code">${esc(o.text)}</pre>`:(o.html?o.text:esc(o.text))}</span></div>`).join("") + `</div>`;
+      q.querySelectorAll(".opt").forEach(el => {
+        const pick = () => {
+          if(q.dataset.done) return;
+          q.dataset.done = 1; answered++;
+          if(el.dataset.c === "true") right++; else el.classList.add("wrong");
+          q.querySelector('[data-c="true"]').classList.add("correct");
+          updateScore();
+        };
+        el.onclick = pick;
+        el.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+      });
+      root.appendChild(q);
+    });
+  });
+}
+function reveal(){
+  document.querySelectorAll('[data-c="true"]').forEach(e => e.classList.add("correct"));
+}
+document.getElementById("shuffleBtn").onclick = () => { render(); scrollTo(0,0); };
+document.getElementById("revealBtn").onclick = reveal;
+render();
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  const DEFAULT_LINE_HEIGHT = 16;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  const PICK_CAPABILITIES = ["pick"];
+  const PICK_CHAIN_LENGTH = 4;
+  const PICK_MAX_TEXT_CHARS = 120;
+  const PICK_MAX_HTML_CHARS = 300;
+
+  function truncate(value, maxChars) {
+    return value.length > maxChars ? value.slice(0, maxChars - 1) + "…" : value;
+  }
+
+  function isPickableElement(element) {
+    return (
+      element instanceof Element &&
+      element !== document.documentElement &&
+      element !== document.body
+    );
+  }
+
+  function resolvePickTarget(x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    const element = document.elementFromPoint(x, y);
+    return isPickableElement(element) ? element.closest("svg") || element : null;
+  }
+
+  function pickLabel(element) {
+    if (element.id) return element.localName + "#" + element.id;
+    return [element.localName].concat(Array.from(element.classList).slice(0, 2)).join(".");
+  }
+
+  // Only attributes that help find the element in source. data-* values and URL
+  // query strings or fragments can carry tokens.
+  const PICK_ATTRIBUTES = new Set([
+    "id",
+    "class",
+    "name",
+    "type",
+    "role",
+    "alt",
+    "aria-label",
+    "href",
+    "src",
+  ]);
+
+  function pickAttributeValue(attribute) {
+    return attribute.name === "href" || attribute.name === "src"
+      ? attribute.value.split(/[?#]/)[0]
+      : attribute.value;
+  }
+
+  function describePickElement(element) {
+    const chain = [];
+    for (
+      let current = element;
+      isPickableElement(current) && chain.length < PICK_CHAIN_LENGTH;
+      current = current.parentElement
+    ) {
+      chain.unshift(current);
+    }
+    const attributes = Array.from(element.attributes)
+      .filter((attribute) => PICK_ATTRIBUTES.has(attribute.name))
+      .map((attribute) => ` ${attribute.name}="${pickAttributeValue(attribute).replace(/"/g, "&quot;")}"`)
+      .join("");
+    const text = (element.innerText || element.textContent || "").replace(/\s+/g, " ").trim();
+    return {
+      chain: chain.map(pickLabel),
+      html: truncate(`<${element.localName}${attributes}>`, PICK_MAX_HTML_CHARS),
+      text: text ? truncate(text, PICK_MAX_TEXT_CHARS) : undefined,
+    };
+  }
+
+  // Hover asks once per frame, and innerText on a large section forces layout,
+  // so only the rect is re-read while the pointer stays on the same element.
+  // Clicks ask for fresh details since the page may have changed the element.
+  let lastPick = null;
+
+  function describePickTarget(element, fresh) {
+    if (fresh || lastPick?.element !== element) {
+      lastPick = { element, details: describePickElement(element) };
+    }
+    const rect = element.getBoundingClientRect();
+    return {
+      rect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
+      ...lastPick.details,
+    };
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      capabilities: PICK_CAPABILITIES,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_PICK") {
+      const element = resolvePickTarget(event.data.x, event.data.y);
+      postToTrustedTop({
+        type: "INLINE_EDIT_PICK_RESULT",
+        seq: event.data.seq,
+        target: element ? describePickTarget(element, event.data.fresh === true) : null,
+      });
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_BY") {
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!scrollForwarding || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      if (deltaMode !== 0 && deltaMode !== 1 && deltaMode !== 2) return;
+      const lineHeight =
+        parseFloat(getComputedStyle(document.documentElement).lineHeight) || DEFAULT_LINE_HEIGHT;
+      const scaleX = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerWidth : 1;
+      const scaleY = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerHeight : 1;
+      // The selection overlay receives the wheel event instead of this iframe.
+      // Instant scrolling preserves trackpad deltas even on smooth-scroll sites.
+      window.scrollBy({ left: deltaX * scaleX, top: deltaY * scaleY, behavior: "instant" });
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>

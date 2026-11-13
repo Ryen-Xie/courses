@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topic 11: Gated RNNs &amp; Sequence Models - Review Questions</title>
+<style>
+:root{
+  --bg:#f6f7f5; --surface:#fff; --text:#1d2523; --muted:#5d6966; --line:#dfe4e1;
+  --accent:#0f6b66; --accent-soft:#e3f1ef;
+  --ok:#17693a; --ok-bg:#e4f4ea; --bad:#a3262a; --bad-bg:#fbe9ea;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:28px 18px 80px}
+header h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;margin:14px 0 6px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.bar .prog{margin-left:auto;color:var(--muted);font-size:.9rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 13px;min-height:38px}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:#0b5753;color:#fff}
+button:focus-visible,.opt:focus-within{outline:3px solid #7cc4be;outline-offset:2px}
+h2.topic{font-size:1.1rem;margin:34px 0 4px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px;margin-top:14px}
+.stem{display:flex;gap:10px;font-weight:600;margin:0 0 12px}
+.stem .stxt{min-width:0;flex:1}
+.stem ul{margin:8px 0;padding-left:22px;font-weight:400}
+.stem li{margin:4px 0}
+.stem .n{color:var(--accent);min-width:1.8em}
+.opts{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff}
+.opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.opt:focus-visible{outline:3px solid #7cc4be;outline-offset:2px}
+.opt.correct,.opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong,.opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.otxt{min-width:0;flex:1}
+.code{margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;overflow-x:auto;background:#f1f4f2;border-radius:6px;padding:8px 10px}
+.opt.correct .code{background:#cfeadb}.opt.wrong .code{background:#f6d6d8}
+.bar .prog{font-weight:600;color:var(--text)}
+.opt input{margin-top:5px;accent-color:var(--accent)}
+.opt .ltr{font-weight:700;min-width:1.4em;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.revealed .opt{cursor:default}
+.revealed .opt:hover{background:#fff;border-color:var(--line)}
+.revealed .opt.sel{background:#fff}
+.revealed .opt.correct,.revealed .opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.revealed .opt.wrong,.revealed .opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.tag{margin-left:auto;font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:8px}
+.correct .tag{color:var(--ok)} .wrong .tag{color:var(--bad)}
+.gloss{color:var(--muted);font-weight:400;font-style:normal}
+.stem .gloss{font-weight:400}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.why{margin-top:12px;padding:10px 12px;border-left:4px solid var(--ok);background:var(--ok-bg);border-radius:6px;font-size:.95rem}
+.why[hidden]{display:none}
+footer{margin-top:40px;color:var(--muted);font-size:.9rem}
+@media(max-width:520px){.tag{display:none}.q{padding:14px 12px}}
+@media(prefers-reduced-motion:no-preference){.opt{transition:background .15s,border-color .15s}}
+code{font-family:Consolas,Menlo,monospace;background:#eef1ef;padding:2px 5px;border-radius:4px;font-size:.9em}
+pre.code{display:block;white-space:pre;overflow-x:auto;background:#f1f4f3;border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0;line-height:1.6;text-align:left}
+pre.code code{background:none;padding:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Topic 11: Gated RNNs &amp; Sequence Models - Review Questions</h1>
+  <p>Click an option to check your answer. Options are shuffled each time.</p>
+</header>
+<div class="bar">
+  <button id="shuffleBtn" class="primary">Shuffle again</button>
+  <button id="revealBtn">Show all answers</button>
+  <span class="prog" id="score" aria-live="polite"></span>
+</div>
+<main id="root"></main>
+</div>
+
+<script>
+const DATA = [{"topic": "", "items": [
+  {"q": "Which architectural feature helps an LSTM preserve information over many time steps?", "o": ["A larger output layer that stores earlier predictions.", "A second recurrent network that reads the sequence backwards.", "A separate embedding vector for each position in the sequence.", "A cell-state pathway with gates that control information flow."], "c": 3, "html": true},
+  {"q": "A team has substantial training data, and useful signals may be separated by many time steps. Which consideration most strongly supports trying an LSTM rather than a vanilla RNN?", "o": ["An LSTM can learn without preserving the order of the inputs.", "An LSTM avoids the need to choose a hidden-state size.", "An LSTM provides a more direct pathway for information and gradient flow across time.", "An LSTM uses information from both sequence directions by default."], "c": 2, "html": true},
+  {"q": "Why is a standard unidirectional RNN insufficient for extracting optimal contextual representations in entity recognition tasks like identifying person names?", "o": ["It can only capture leftward (past) context, missing informative future tokens that disambiguate entities.", "It can only accept binary inputs rather than dense word embeddings.", "It requires equal sequence lengths across the training set.", "It cannot compute loss values at intermediate sequence steps."], "c": 0, "html": true},
+  {"q": "How does a Bidirectional RNN construct the contextual representation for a word at time step <code>t</code>?", "o": ["It averages the embedding of the current word with the initial hidden state <code>h^(0)</code>.", "It runs a forward RNN and a backward RNN over the sequence and combines (e.g., concatenates) their hidden states.", "It reverses the sentence after training and re-runs the forward RNN using the same weight matrix.", "It feeds the output probabilities from the last step back into the first step."], "c": 1, "html": true},
+  {"q": "How are the weights normally organized in a bidirectional RNN?", "o": ["Both directions share recurrent weights but use different output labels.", "The backward direction uses the transpose of the forward recurrent weights.", "The weights alternate between directions on successive time steps.", "The forward and backward recurrent networks have separate weights."], "c": 3, "html": true},
+  {"q": "For which of the following machine learning tasks is a standard Bidirectional RNN <strong>inapplicable</strong> during inference?", "o": ["Named entity recognition on customer reviews.", "Sentiment classification on completed survey responses.", "Sequential next-token text generation.", "Offline speech-to-text transcription of recorded audio files."], "c": 2, "html": true},
+  {"q": "Why cannot a Bidirectional RNN be employed for language modeling?", "o": ["Language modeling requires dense vector inputs that Bidirectional RNNs cannot accept.", "Generating sequences step-by-step only has leftward context available as future tokens have not yet been produced.", "Bidirectional RNNs cannot be trained with cross-entropy loss.", "Bidirectional layers can only output scalar values rather than sequence probabilities."], "c": 1, "html": true},
+  {"q": "A document-processing system assigns each token one of three labels: company, date, or other. What output arrangement best matches this task?", "o": ["One label for the complete document.", "One label for each input token.", "One predicted token for each entity category.", "One score for each possible document length."], "c": 1, "html": true},
+  {"q": "In the sentence “Meridian Labs renewed the contract on 18 August,” a system identifies “Meridian Labs” as a company and “18 August” as a date. Which two decisions does this illustrate?", "o": ["Determining sentence boundaries and predicting the next sentence.", "Identifying the topic and estimating the writer’s attitude.", "Detecting grammatical errors and suggesting replacement words.", "Identifying entity spans and assigning entity categories."], "c": 3, "html": true},
+  {"q": "The same word appears in two different reports. Why might its recurrent hidden-state representation differ between the reports?", "o": ["Its representation incorporates the surrounding sequence context.", "Its embedding must have a different number of dimensions in each report.", "Its recurrent weights are reinitialized whenever the word appears.", "Its representation is determined by the report’s final predicted label."], "c": 0, "html": true},
+  {"q": "In an entity recognition problem where every input word must be classified as part of a person's name or not, what objective is computed at each time step?", "o": ["A single regression objective across the entire document.", "A sequence-level clustering objective computed only at the final step.", "A classification objective evaluated at each individual time step.", "An unsupervised dimensionality reduction objective without target labels."], "c": 2, "html": true},
+  {"q": "A single-layer RNN is unrolled over 40 time steps. A second recurrent layer is then added above it. What does the second layer add?", "o": ["Another 40 input positions to the sequence.", "A backward processing direction through the existing layer.", "Another training pass through the same recurrent weights.", "Another level of recurrent representation processing."], "c": 3, "html": true},
+  {"q": "What is the intended benefit of stacking recurrent layers?", "o": ["Higher layers can build more complex features from representations produced by lower layers.", "Higher layers can replace the need for ordered inputs in lower layers.", "Higher layers can assign training labels to the lower layers automatically.", "Higher layers can turn each sequence position into an independent observation."], "c": 0, "html": true},
+  {"q": "What does <code>return_sequences=True</code> request from a Keras recurrent layer?", "o": ["The original input sequence alongside the final prediction.", "A separate output for every recurrent layer in the model.", "A hidden-state output for every time step.", "The final hidden state and final cell state as separate outputs."], "c": 2, "html": true},
+  {"q": "Consider this model, intended to predict one class for each complete input sequence:<br><pre class=\"code\"><code>Sequential([\n    layers.LSTM(48),\n    layers.LSTM(24),\n    layers.Dense(3, activation=\"softmax\")\n])</code></pre>Which change allows the second LSTM to receive a sequence from the first?", "o": ["Set <code>return_sequences=True</code> on the second LSTM only.", "Set <code>return_sequences=True</code> on the first LSTM.", "Change the second LSTM to <code>layers.LSTM(48)</code>.", "Insert a <code>layers.Flatten()</code> layer between the LSTMs."], "c": 1, "html": true},
+  {"q": "A model stacks three LSTM layers and produces one classification for the complete sequence. Which <code>return_sequences</code> configuration is appropriate, from the first LSTM to the third?", "o": ["<code>False, True, True</code>", "<code>True, False, True</code>", "<code>False, False, False</code>", "<code>True, True, False</code>"], "c": 3, "html": true},
+  {"q": "Examine the following Keras code snippet:<br><pre class=\"code\"><code>model = Sequential([\n    layers.Embedding(10000, 100),\n    layers.Bidirectional(layers.LSTM(64), merge_mode='concat'),\n    layers.Dense(1, activation='sigmoid')\n])</code></pre>What is the dimensionality of the vector produced by the <code>Bidirectional</code> layer before it enters the <code>Dense</code> layer?", "o": ["64", "100", "128", "32"], "c": 2, "html": true},
+  {"q": "A model reads a sequence of hourly electricity measurements and predicts one label indicating whether the day contained an unusual usage pattern. Which input/output arrangement is this?", "o": ["One-to-many.", "One-to-one.", "Many-to-one.", "Many-to-many."], "c": 2, "html": true},
+  {"q": "A system receives one fixed product-description vector and generates a sequence of assembly instructions. Which input/output arrangement best describes this task?", "o": ["Many-to-one.", "One-to-many.", "Many-to-many.", "One-to-one."], "c": 1, "html": true},
+  {"q": "Which of the following problems is an example of a synchronous Many-to-Many sequence model where an output is produced at each input step?", "o": ["Video frame classification or per-token Named Entity Recognition (NER).", "Image captioning from static product photos.", "Predicting end-of-quarter earnings from historical annual reports.", "Standard tabular regression using fully connected layers."], "c": 0, "html": true}
+]}];
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const root = document.getElementById("root");
+let answered = 0, right = 0;
+
+function updateScore(){
+  document.getElementById("score").textContent = answered ? `Score: ${right} / ${answered}` : "";
+}
+
+function render(){
+  answered = right = 0; updateScore();
+  root.innerHTML = "";
+  let n = 0;
+  DATA.forEach(t => {
+    t.items.forEach(it => {
+      n++;
+      const opts = shuffle(it.o.map((text,k)=>({text, ok:k===it.c, html:!!it.html})));
+      const q = document.createElement("section");
+      q.className = "q";
+      q.innerHTML = `<div class="stem"><span class="n">${n}.</span><span class="stxt">${it.html?it.q:esc(it.q)}</span></div>` +
+        `<div class="opts">` + opts.map((o,k)=>`<div class="opt" role="button" tabindex="0" data-c="${o.ok}"><span class="ltr">${"ABCD"[k]}.</span><span class="otxt">${o.text.includes("\n")?`<pre class="code">${esc(o.text)}</pre>`:(o.html?o.text:esc(o.text))}</span></div>`).join("") + `</div>`;
+      q.querySelectorAll(".opt").forEach(el => {
+        const pick = () => {
+          if(q.dataset.done) return;
+          q.dataset.done = 1; answered++;
+          if(el.dataset.c === "true") right++; else el.classList.add("wrong");
+          q.querySelector('[data-c="true"]').classList.add("correct");
+          updateScore();
+        };
+        el.onclick = pick;
+        el.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+      });
+      root.appendChild(q);
+    });
+  });
+}
+function reveal(){
+  document.querySelectorAll('[data-c="true"]').forEach(e => e.classList.add("correct"));
+}
+document.getElementById("shuffleBtn").onclick = () => { render(); scrollTo(0,0); };
+document.getElementById("revealBtn").onclick = reveal;
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubhouse Management System - Database Structure & Relationships</title>
+    <style>
+        :root {
+            --primary-color: #1e293b;
+            --accent-pk: #dc2626;
+            --accent-fk: #2563eb;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #334155;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            line-height: 1.5;
+            color: var(--text-main);
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: var(--bg-main);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 28px;
+            padding: 24px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .key-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .legend-box {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        .table-card h2 {
+            font-size: 1.1rem;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 0.725rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-parent {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        .badge-child {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .pk {
+            color: var(--accent-pk);
+            font-weight: 700;
+            background-color: #fef2f2;
+        }
+
+        .fk {
+            color: var(--accent-fk);
+            font-weight: 700;
+            background-color: #eff6ff;
+        }
+
+        .hl-member {
+            background-color: #fef9c3 !important;
+        }
+
+        .hl-facility {
+            background-color: #e0f2fe !important;
+        }
+
+        .hl-staff {
+            background-color: #f3e8ff !important;
+        }
+
+        .teaching-notes {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .teaching-notes h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .teaching-notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .teaching-notes li {
+            margin-bottom: 10px;
+        }
+
+        .teaching-notes li:last-child {
+            margin-bottom: 0;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Royal Residence Club House Management System</h1>
+        <p class="subtitle">Physical Relational Database Schema & Foreign Key Relationships</p>
+        
+        <div class="key-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background: var(--accent-pk);"></div>
+                <span>Primary Key (PK)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: var(--accent-fk);"></div>
+                <span>Foreign Key (FK)</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid-container">
+        
+        <!-- Parent Table 1: Member -->
+        <div class="table-card">
+            <h2>
+                Member Table 
+                <span class="badge badge-parent">Parent (1)</span>
+            </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="pk">member_id (PK)</th>
+                        <th>username</th>
+                        <th>name</th>
+                        <th>hkid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hl-member">
+                        <td class="pk">101</td>
+                        <td>john_doe</td>
+                        <td>John Doe</td>
+                        <td>A123456(7)</td>
+                    </tr>
+                    <tr>
+                        <td class="pk">102</td>
+                        <td>mary_wong</td>
+                        <td>Mary Wong</td>
+                        <td>B987654(3)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Parent Table 2: Facility -->
+        <div class="table-card">
+            <h2>
+                Facility Table 
+                <span class="badge badge-parent">Parent (1)</span>
+            </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="pk">facility_id (PK)</th>
+                        <th>name</th>
+                        <th>rent</th>
+                        <th>condition</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hl-facility">
+                        <td class="pk">1</td>
+                        <td>Badminton Court A</td>
+                        <td>$50.00</td>
+                        <td>Good</td>
+                    </tr>
+                    <tr>
+                        <td class="pk">2</td>
+                        <td>Tennis Court 1</td>
+                        <td>$80.00</td>
+                        <td>Excellent</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Parent Table 3: Staff -->
+        <div class="table-card">
+            <h2>
+                Staff Table 
+                <span class="badge badge-parent">Parent (1)</span>
+            </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="pk">staff_id (PK)</th>
+                        <th>username</th>
+                        <th>name</th>
+                        <th>role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hl-staff">
+                        <td class="pk">201</td>
+                        <td>admin_chan</td>
+                        <td>Alex Chan</td>
+                        <td>Administrator</td>
+                    </tr>
+                    <tr>
+                        <td class="pk">202</td>
+                        <td>mgr_lee</td>
+                        <td>Sarah Lee</td>
+                        <td>Manager</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Child Table: Reservation -->
+        <div class="table-card full-width">
+            <h2>
+                Reservation Table 
+                <span class="badge badge-child">Child / Junction Table (N)</span>
+            </h2>
+            <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 12px;">
+                Stores booking records and links Members, Facilities, and Staff (Administrator check-ins/check-outs) using Foreign Keys.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="pk">reservation_id (PK)</th>
+                        <th>date</th>
+                        <th>timeslot</th>
+                        <th>status</th>
+                        <th>special_request</th>
+                        <th class="fk">member_id (FK)</th>
+                        <th class="fk">facility_id (FK)</th>
+                        <th class="fk">processed_by_staff_id (FK)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pk">5001</td>
+                        <td>2026-04-20</td>
+                        <td>10:00 - 11:00</td>
+                        <td>Arrived</td>
+                        <td>Turn off AC</td>
+                        <td class="fk hl-member">101</td>
+                        <td class="fk hl-facility">1</td>
+                        <td class="fk hl-staff">201</td>
+                    </tr>
+                    <tr>
+                        <td class="pk">5002</td>
+                        <td>2026-04-20</td>
+                        <td>14:00 - 16:00</td>
+                        <td>Confirmed</td>
+                        <td>None</td>
+                        <td class="fk">102</td>
+                        <td class="fk">2</td>
+                        <td class="fk" style="color: var(--text-muted); font-weight: normal;">NULL</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Explanation Section -->
+    <div class="teaching-notes">
+        <h3>Key Teaching Points for Foreign Keys:</h3>
+        <ul>
+            <li>
+                <strong>Linking Staff to Actions:</strong> In Reservation <code>#5001</code>, the foreign key <code>processed_by_staff_id = 201</code> points to <strong>Alex Chan</strong> in the <code>Staff</code> table. This reflects the check-in process handled by an Administrator (UC-004 & UC-005).
+            </li>
+            <li>
+                <strong>Nullable Foreign Keys:</strong> Note that Reservation <code>#5002</code> has a <code>NULL</code> value for <code>processed_by_staff_id</code>. This demonstrates that a member can reserve a facility online (UC-002) before any staff member processes their check-in at the clubhouse.
+            </li>
+            <li>
+                <strong>Entity Relationships:</strong> 
+                The <code>Reservation</code> table links three independent parent entities:
+                <code>Member</code> (Who booked), <code>Facility</code> (What was booked), and <code>Staff</code> (Who checked them in).
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>

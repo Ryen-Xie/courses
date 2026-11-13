@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Forest Dessert – DAH Ordering System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .receipt-border { border: 2px solid #1f2937; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+            .receipt-card { box-shadow: none !important; border: 2px solid #000 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-forest-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="resetApp()">
+                <div class="bg-forest-500 text-white p-2 rounded-lg">
+                    <i class="fa-solid fa-bowl-food text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide">Green Forest Dessert – DAH</h1>
+                    <p class="text-xs text-forest-100 opacity-80">Member Ordering & Management System</p>
+                </div>
+            </div>
+            
+            <!-- User Bar -->
+            <div id="user-nav-bar" class="flex items-center space-x-4">
+                <span id="user-status-badge" class="text-xs bg-amber-500 text-amber-950 font-semibold px-2.5 py-1 rounded-full">
+                    <i class="fa-solid fa-lock text-xs mr-1"></i> Not Logged In
+                </span>
+                <div id="logged-in-user-info" class="hidden text-sm flex items-center space-x-3">
+                    <div class="text-right">
+                        <span id="nav-user-name" class="font-semibold text-white block">Chris Tse</span>
+                        <span id="nav-user-id" class="text-xs text-forest-100">ID: 99988441</span>
+                    </div>
+                    <button id="header-logout-btn" onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow transition flex items-center space-x-1 border border-red-500">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+
+        <!-- Use Case Tracker / Visual Workflow Process Bar -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 no-print">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-forest-100 text-forest-800 text-xs font-bold px-2.5 py-1 rounded-md" id="active-uc-badge">
+                        IUC-001
+                    </span>
+                    <h2 class="text-sm font-semibold text-slate-700" id="active-uc-title">Login as Member</h2>
+                </div>
+                <div class="text-xs text-slate-500 flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-info text-forest-700"></i>
+                    <span>Interactive Prototype following formal Use Case Flows</span>
+                </div>
+            </div>
+
+            <!-- Process Steps Progress -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 text-center text-xs">
+                <div id="step-node-1" class="p-2 rounded-lg border bg-forest-50 border-forest-500 text-forest-800 font-medium transition-all">
+                    1. Login (IUC-001)
+                </div>
+                <div id="step-node-2" class="p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all">
+                    2. Select Category
+                </div>
+                <div id="step-node-3" class="p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all">
+                    3. Dessert List
+                </div>
+                <div id="step-node-4" class="p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all">
+                    4. Details & Add
+                </div>
+                <div id="step-node-5" class="p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all">
+                    5. Cart & Payment
+                </div>
+                <div id="step-node-6" class="p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all">
+                    6. Order Confirmed
+                </div>
+                <div id="step-node-7" class="p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all">
+                    7. Receipt (EUC-001)
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Panel -->
+        <div class="flex-grow flex flex-col justify-center">
+
+            <!-- ========================================== -->
+            <!-- SECTION 1: IUC-001 LOGIN & FORGOT PASSWORD -->
+            <!-- ========================================== -->
+            <section id="section-login" class="max-w-md w-full mx-auto bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="bg-forest-900 p-6 text-white text-center">
+                    <i class="fa-solid fa-user-lock text-3xl mb-2 text-forest-100"></i>
+                    <h2 class="text-xl font-bold">Member Sign In</h2>
+                    <p class="text-xs text-forest-100 mt-1">Access UC-002 Desserts Ordering System</p>
+                </div>
+
+                <!-- Standard Login Form -->
+                <div id="login-form-container" class="p-6 space-y-4">
+                    <div id="login-error-msg" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded text-xs">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                        <span id="login-error-text">Password does not match, please try again.</span>
+                    </div>
+
+                    <div id="login-success-msg" class="hidden bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-3 rounded text-xs">
+                        <i class="fa-solid fa-circle-check mr-1"></i>
+                        <span>Login successful! Loading dessert menu...</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mobile Phone Number</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-phone absolute left-3 top-3 text-slate-400 text-sm"></i>
+                            <input type="text" id="login-mobile" value="99988441" placeholder="Enter 8-digit mobile number" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-forest-500 focus:outline-none">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Default Member: Chris Tse (99988441)</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-key absolute left-3 top-3 text-slate-400 text-sm"></i>
+                            <input type="password" id="login-password" value="123456" placeholder="Enter password" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-forest-500 focus:outline-none">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Default Password: <b>123456</b> (or test wrong password)</p>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs">
+                        <button type="button" onclick="showForgotPasswordScreen()" class="text-forest-700 hover:underline font-medium">Forgot Password?</button>
+                    </div>
+
+                    <button onclick="handleLoginSubmit()" class="w-full bg-forest-700 hover:bg-forest-800 text-white font-medium py-2.5 rounded-lg shadow transition flex items-center justify-center space-x-2 text-sm">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Login</span>
+                    </button>
+                </div>
+
+                <!-- Forgot Password Flow (IUC-001 Step 4) -->
+                <div id="forgot-password-container" class="hidden p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b pb-2">
+                        <h3 class="font-bold text-slate-800 text-sm">Reset Password</h3>
+                        <button onclick="hideForgotPasswordScreen()" class="text-xs text-slate-500 hover:underline">Back to Login</button>
+                    </div>
+
+                    <div id="forgot-step-1" class="space-y-3">
+                        <p class="text-xs text-slate-600">Enter your registered mobile number to receive a verification code via SMS System.</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Mobile Phone Number</label>
+                            <input type="text" id="forgot-mobile" value="99988441" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-forest-500 focus:outline-none">
+                        </div>
+                        <button onclick="handleSendSMS()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium py-2 rounded-lg">
+                            Request SMS Verification Code
+                        </button>
+                    </div>
+
+                    <div id="forgot-step-2" class="hidden space-y-3">
+                        <div class="bg-amber-50 border border-amber-200 text-amber-800 p-2.5 rounded text-xs">
+                            <i class="fa-solid fa-comment-sms text-amber-600 mr-1"></i>
+                            <strong>SMS System Alert:</strong> Your code is <span class="font-bold tracking-widest bg-amber-200 px-1 rounded" id="simulated-sms-code">8829</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Enter Verification Code</label>
+                            <input type="text" id="forgot-code-input" placeholder="Enter 4-digit code" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-forest-500 focus:outline-none">
+                        </div>
+                        <button onclick="handleVerifyCode()" class="w-full bg-forest-700 hover:bg-forest-800 text-white text-xs font-medium py-2 rounded-lg">
+                            Verify Code
+                        </button>
+                    </div>
+
+                    <div id="forgot-step-3" class="hidden space-y-3">
+                        <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 p-2 rounded text-xs">
+                            Identity verified! Please set a new password.
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">New Password</label>
+                            <input type="password" id="forgot-new-password" placeholder="Enter new password" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-forest-500 focus:outline-none">
+                        </div>
+                        <button onclick="handleUpdatePasswordAndLogin()" class="w-full bg-forest-700 hover:bg-forest-800 text-white text-xs font-medium py-2 rounded-lg">
+                            Update Password and Login
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 2A: UC-002 STEP 2 & 3 SELECT CATEGORY PAGE -->
+            <!-- ========================================== -->
+            <section id="section-category-selection" class="hidden max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-md border border-slate-200 p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="bg-forest-100 text-forest-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">UC-002 Step 2</span>
+                    <h2 class="text-2xl font-bold text-slate-800">Select Dessert Category</h2>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto">Please choose a category below to view the available dessert menu.</p>
+                </div>
+
+                <!-- Category Cards Selection -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 py-2" id="category-cards-container">
+                    <!-- Dynamic rendering of HK, Chinese, Western cards -->
+                </div>
+
+                <!-- Step 3 Action Button -->
+                <div class="pt-4 border-t text-center">
+                    <button onclick="confirmCategorySelection()" class="w-full sm:w-auto bg-forest-700 hover:bg-forest-800 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition flex items-center justify-center space-x-2 text-sm mx-auto">
+                        <i class="fa-solid fa-utensils"></i>
+                        <span>Show menu of the category</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 2B: UC-002 STEP 4+ DESSERT LIST & CART PAGE -->
+            <!-- ========================================== -->
+            <section id="section-ordering" class="hidden space-y-6">
+
+                <!-- Header bar with category back-button navigation -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <button onclick="backToCategorySelection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 border border-slate-300">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Change Category</span>
+                        </button>
+                        <div>
+                            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Selected Category</span>
+                            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2" id="selected-category-header">
+                                <span class="bg-forest-700 text-white text-xs px-2 py-0.5 rounded font-mono" id="active-cat-badge">HK</span>
+                                <span id="active-cat-title">HK Desserts</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <span class="text-xs text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-lg border" id="item-count-badge">2 Items Available</span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- Step 4 & 5: Desserts List & Item Details -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <!-- Desserts Grid (Step 4) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="dessert-grid">
+                            <!-- JS populated dessert cards for selected category -->
+                        </div>
+                    </div>
+
+                    <!-- Step 6 & 7: Purchase List (Cart) & Payment -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-20 space-y-4">
+                            <div class="flex items-center justify-between border-b pb-3">
+                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-basket-shopping text-forest-700"></i>
+                                    <span>Purchase List</span>
+                                </h3>
+                                <span class="bg-forest-100 text-forest-800 text-xs font-semibold px-2 py-0.5 rounded-full" id="cart-item-count">
+                                    0 Items
+                                </span>
+                            </div>
+
+                            <!-- Cart Items List -->
+                            <div id="cart-items-container" class="space-y-3 max-h-60 overflow-y-auto pr-1 divide-y divide-slate-100">
+                                <div class="text-center py-8 text-slate-400 text-xs">
+                                    <i class="fa-solid fa-cart-flatbed text-3xl mb-2 text-slate-300 block"></i>
+                                    Your purchase list is currently empty. Select a dessert to add items.
+                                </div>
+                            </div>
+
+                            <!-- Cart Total calculation -->
+                            <div class="border-t pt-3 space-y-1.5">
+                                <div class="flex justify-between text-xs text-slate-500">
+                                    <span>Subtotal</span>
+                                    <span id="cart-subtotal">$0</span>
+                                </div>
+                                <div class="flex justify-between text-xs text-slate-500">
+                                    <span>Service Charge (0%)</span>
+                                    <span>$0</span>
+                                </div>
+                                <div class="flex justify-between text-base font-bold text-slate-900 border-t pt-2">
+                                    <span>Order Total</span>
+                                    <span id="cart-total" class="text-forest-700">$0</span>
+                                </div>
+                            </div>
+
+                            <!-- Step 7: Credit Card & Order Confirmation Form -->
+                            <div class="border-t pt-3 space-y-3">
+                                <label class="block text-xs font-semibold text-slate-700">Credit Card Number</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-credit-card absolute left-3 top-3 text-slate-400 text-sm"></i>
+                                    <input type="text" id="credit-card-input" value="4532-8810-9921-4400" placeholder="16-digit card number" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-forest-500 focus:outline-none">
+                                </div>
+                                <p class="text-[10px] text-slate-400">Verifies with Credit Card Clearing House simulator</p>
+
+                                <button onclick="handleConfirmOrder()" class="w-full bg-forest-700 hover:bg-forest-800 text-white font-semibold py-2.5 rounded-lg shadow transition flex items-center justify-center space-x-2 text-sm">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>Confirm Order</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 3: ORDER CONFIRMED (UC-002 Step 10-11) -->
+            <!-- ========================================== -->
+            <section id="section-order-summary" class="hidden max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden space-y-0">
+                <div class="bg-forest-800 p-6 text-white text-center">
+                    <div class="w-12 h-12 bg-white/10 text-emerald-300 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2 class="text-xl font-bold">Order Submitted Successfully!</h2>
+                    <p class="text-xs text-forest-100 mt-1">Saved into Order and Order Line Datastores</p>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- Order Datastore Info -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl text-xs border border-slate-100">
+                        <div>
+                            <span class="text-slate-400 block">Order ID</span>
+                            <span class="font-bold text-slate-800 text-sm" id="summary-order-id">4400110</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Member ID</span>
+                            <span class="font-semibold text-slate-800" id="summary-member-id">99988441</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Member Name</span>
+                            <span class="font-semibold text-slate-800" id="summary-member-name">Chris Tse</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Order Date & Time</span>
+                            <span class="font-medium text-slate-700" id="summary-order-datetime">28/3/2023 9:01PM</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Credit Card</span>
+                            <span class="font-mono text-slate-700" id="summary-cc-number">**** **** **** 4400</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Order Status</span>
+                            <span class="text-emerald-700 bg-emerald-100 font-bold px-2 py-0.5 rounded text-[10px]">SUCCESS</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Lines Datastore Details -->
+                    <div>
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-2">Order Line Items</h4>
+                        <div class="border rounded-lg overflow-hidden text-xs">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-600 font-semibold border-b">
+                                        <th class="p-2.5">Order Line ID</th>
+                                        <th class="p-2.5">Dessert Name</th>
+                                        <th class="p-2.5">Category</th>
+                                        <th class="p-2.5 text-center">Qty</th>
+                                        <th class="p-2.5 text-right">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summary-order-lines-body" class="divide-y divide-slate-100">
+                                    <!-- JS populated -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right mt-3 text-base font-bold text-slate-800">
+                            Total Paid: <span class="text-forest-700" id="summary-order-total">$110</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 12 & EUC-001 Action Trigger -->
+                    <div class="border-t pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <button onclick="handleLogout()" class="text-xs text-slate-500 hover:text-slate-800 underline">
+                            Log out from system (Step 13)
+                        </button>
+                        <button onclick="triggerEUC001Receipt()" class="w-full sm:w-auto bg-forest-700 hover:bg-forest-800 text-white font-medium px-5 py-2.5 rounded-lg shadow transition flex items-center justify-center space-x-2 text-xs">
+                            <i class="fa-solid fa-file-invoice"></i>
+                            <span>EUC-001: Generate Receipt of This Order</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 4: EUC-001 GENERATE RECEIPT DISPLAY -->
+            <!-- ========================================== -->
+            <section id="section-receipt" class="hidden max-w-3xl mx-auto w-full space-y-4">
+                
+                <!-- Action Controls -->
+                <div class="flex justify-between items-center no-print bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <button onclick="backToOrderSummary()" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Order Summary
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-print"></i> Print / Save Snapshot
+                        </button>
+                        <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-1.5 rounded text-xs font-medium">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Exact Matching Receipt Template from Image Sample -->
+                <div class="bg-white p-8 md:p-12 rounded-lg shadow-md receipt-card border-2 border-slate-800 font-sans text-slate-900">
+                    
+                    <!-- Receipt Header -->
+                    <div class="text-center mb-8">
+                        <h1 class="text-2xl md:text-3xl font-normal tracking-wide border-b-2 border-slate-800 pb-2 inline-block">
+                            Green Forest Dessert – DAH
+                        </h1>
+                    </div>
+
+                    <!-- Member & Order Details Header Info -->
+                    <div class="grid grid-cols-2 gap-y-2 mb-8 text-sm md:text-base font-normal">
+                        <div>
+                            <span>Member Name: </span>
+                            <span class="font-semibold underline" id="receipt-member-name">Chris Tse</span>
+                        </div>
+                        <div class="text-right">
+                            <span>Order ID: </span>
+                            <span class="font-semibold underline" id="receipt-order-id">4400110</span>
+                        </div>
+                        <div>
+                            <span>Member ID: </span>
+                            <span class="font-semibold underline" id="receipt-member-id">99988441</span>
+                        </div>
+                        <div class="text-right">
+                            <span>Order Date: </span>
+                            <span class="font-semibold underline" id="receipt-order-date">28/3/2023 9:01PM</span>
+                        </div>
+                    </div>
+
+                    <!-- Particulars Table Header -->
+                    <div class="mb-2 font-medium text-base">
+                        Particulars:
+                    </div>
+
+                    <!-- Table matching exact style -->
+                    <div class="overflow-x-auto mb-6">
+                        <table class="w-full text-left border-collapse border-2 border-slate-900 text-sm md:text-base">
+                            <thead>
+                                <tr class="border-b-2 border-slate-900 bg-slate-50">
+                                    <th class="border-r-2 border-slate-900 p-2 text-center font-semibold">Order Line ID</th>
+                                    <th class="border-r-2 border-slate-900 p-2 font-semibold">Dessert Name</th>
+                                    <th class="border-r-2 border-slate-900 p-2 text-center font-semibold">Category</th>
+                                    <th class="border-r-2 border-slate-900 p-2 text-center font-semibold">Quantity</th>
+                                    <th class="p-2 text-center font-semibold">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receipt-particulars-body">
+                                <!-- Pre-populated or dynamically mapped from user order -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Total Row -->
+                    <div class="text-right text-lg md:text-xl font-normal pr-2">
+                        Order total: <span class="font-semibold" id="receipt-order-total">$110</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Dessert Detail Modal (UC-002 Step 5) -->
+    <div id="dessert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 transform transition-all">
+            <div class="relative h-48 bg-slate-100">
+                <img id="modal-img" src="" alt="Dessert detail" class="w-full h-full object-cover">
+                <button onclick="closeModal()" class="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <span id="modal-category" class="absolute bottom-3 left-3 bg-forest-900/90 text-forest-100 text-xs px-2.5 py-1 rounded-md font-medium">
+                    Category
+                </span>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 id="modal-title" class="text-xl font-bold text-slate-900">Dessert Name</h3>
+                        <p id="modal-availability" class="text-xs font-semibold text-emerald-600 mt-0.5">
+                            <i class="fa-solid fa-circle-check"></i> Available in stock
+                        </p>
+                    </div>
+                    <span id="modal-price" class="text-xl font-bold text-forest-700">$0</span>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-2">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wide">Ingredients & Nutrition Facts</h4>
+                    <p id="modal-description" class="text-xs text-slate-600 leading-relaxed">
+                        Passage description detailing fresh ingredients, dietary highlights, calories, and nutrition facts.
+                    </p>
+                </div>
+
+                <!-- Step 6 Quantity Selector & Add -->
+                <div class="flex items-center justify-between border-t pt-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-semibold text-slate-700">Quantity:</span>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden">
+                            <button onclick="adjustModalQty(-1)" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">-</button>
+                            <span id="modal-qty" class="px-3 py-1 text-sm font-semibold text-slate-800">1</span>
+                            <button onclick="adjustModalQty(1)" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">+</button>
+                        </div>
+                    </div>
+
+                    <button onclick="addModalItemToCart()" class="bg-forest-700 hover:bg-forest-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-cart-plus"></i>
+                        <span>Add to Order</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-3 rounded-lg shadow-xl z-50 flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fa-solid fa-info-circle text-forest-500 text-sm"></i>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- Application State & Script Logic -->
+    <script>
+        // ========================================================
+        // 1. DATA STORES (MEMBER, DESSERT, ORDER, ORDER_LINE)
+        // ========================================================
+
+        // MEMBER Datastore
+        const MEMBER_DATASTORE = [
+            {
+                memberId: "99988441",
+                firstName: "Chris",
+                lastName: "Tse",
+                password: "123456",
+                mobileNumber: "99988441",
+                status: "Active"
+            }
+        ];
+
+        // DESSERT Datastore categorized explicitly into HK, Chinese, and Western
+        const DESSERT_DATASTORE = [
+            // HK Category
+            {
+                dessertId: "D001",
+                name: "Mango Sago",
+                price: 30,
+                category: "HK",
+                thumbnail: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80",
+                description: "Classic Hong Kong style sweet mango puree with sago pearls and pomelo pulp. Rich in Vitamin C. Ingredients: Fresh mango, coconut milk, sago. Energy: 180 kcal.",
+                availability: true
+            },
+            {
+                dessertId: "D002",
+                name: "Mango Pomelo Sago",
+                price: 34,
+                category: "HK",
+                thumbnail: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80",
+                description: "Premium Hong Kong style dessert with rich fresh mango chunks, tangy pomelo sacs, evaporated milk, and soft tapioca sago. Energy: 210 kcal.",
+                availability: true
+            },
+
+            // Chinese Category
+            {
+                dessertId: "D003",
+                name: "Red Bean Paste",
+                price: 18,
+                category: "Chinese",
+                thumbnail: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=400&q=80",
+                description: "Traditional warm red bean soup infused with aged 15-year dried tangerine peel. Natural plant fiber and iron. Ingredients: Premium azuki red beans, lotus seeds. Energy: 150 kcal.",
+                availability: true
+            },
+            {
+                dessertId: "D004",
+                name: "Almond Paste",
+                price: 30,
+                category: "Chinese",
+                thumbnail: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80",
+                description: "Freshly ground sweet almond tea soup. Smooth texture, nourishing for skin and lungs. Ingredients: Southern & Northern sweet almonds, rice flour. Energy: 195 kcal.",
+                availability: true
+            },
+
+            // Western Category
+            {
+                dessertId: "D005",
+                name: "Oreo Tofu Pudding",
+                price: 32,
+                category: "Western",
+                thumbnail: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=400&q=80",
+                description: "Silky soft tofu pudding fusion layered with crushed Oreo cookies and chocolate sprinkles. Contains soy, dairy, wheat. Energy: 220 kcal.",
+                availability: true
+            },
+            {
+                dessertId: "D006",
+                name: "Chocolate Lava Cake",
+                price: 38,
+                category: "Western",
+                thumbnail: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=400&q=80",
+                description: "Warm Belgian dark chocolate cake with a rich molten lava core served with dark chocolate drizzle. Energy: 340 kcal, Protein: 5g.",
+                availability: true
+            },
+            {
+                dessertId: "D007",
+                name: "Tiramisu",
+                price: 36,
+                category: "Western",
+                thumbnail: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=400&q=80",
+                description: "Authentic Italian espresso-soaked savoiardi ladyfingers layered with creamy mascarpone cheese and dusted with cocoa powder. Energy: 280 kcal.",
+                availability: true
+            }
+        ];
+
+        // ORDER & ORDER_LINE Datastores (In-Memory State)
+        let ORDER_DATASTORE = [];
+        let ORDER_LINE_DATASTORE = [];
+
+        // Application State Variables
+        let currentMember = null;
+        let pendingSelectedCategory = "HK";
+        let activeCategory = "HK";
+        let activeModalDessert = null;
+        let currentModalQty = 1;
+        let cart = []; // Array of { dessert, quantity }
+        let currentOrder = null; // Last generated order
+
+        // Sample Pre-populated Order matching the image sample
+        const PREPOPULATED_SAMPLE_ORDER = {
+            orderId: "4400110",
+            orderDate: "28/3/2023",
+            orderTime: "9:01PM",
+            orderTotal: 110,
+            creditCardNumber: "**** **** **** 4400",
+            status: "Completed",
+            memberId: "99988441",
+            memberName: "Chris Tse",
+            lines: [
+                { orderlineId: "4400110-1", name: "Oreo Tofu Pudding", category: "Western", quantity: 2, price: 32 },
+                { orderlineId: "4400110-2", name: "Mango Sago", category: "HK", quantity: 1, price: 30 },
+                { orderlineId: "4400110-3", name: "Red Bean Paste", category: "Chinese", quantity: 1, price: 18 },
+                { orderlineId: "4400110-4", name: "Almond Paste", category: "Chinese", quantity: 1, price: 30 }
+            ]
+        };
+
+        // ========================================================
+        // 2. INITIALIZATION & NAVIGATION (GLOBAL SCOPE)
+        // ========================================================
+
+        function setProcessStep(stepNum, ucCode, ucTitle) {
+            document.getElementById("active-uc-badge").textContent = ucCode;
+            document.getElementById("active-uc-title").textContent = ucTitle;
+
+            for (let i = 1; i <= 7; i++) {
+                const node = document.getElementById(`step-node-${i}`);
+                if (!node) continue;
+                if (i === stepNum) {
+                    node.className = "p-2 rounded-lg border bg-forest-700 text-white font-bold shadow-sm transition-all";
+                } else if (i < stepNum) {
+                    node.className = "p-2 rounded-lg border bg-forest-50 border-forest-300 text-forest-800 font-medium transition-all";
+                } else {
+                    node.className = "p-2 rounded-lg border bg-slate-50 border-slate-200 text-slate-400 font-medium transition-all";
+                }
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-message").textContent = msg;
+            toast.classList.remove("translate-y-20", "opacity-0");
+            setTimeout(() => {
+                toast.classList.add("translate-y-20", "opacity-0");
+            }, 3000);
+        }
+
+        // ========================================================
+        // 3. IUC-001 LOGIN & FORGOT PASSWORD LOGIC
+        // ========================================================
+
+        function handleLoginSubmit() {
+            const mobileInput = document.getElementById("login-mobile").value.trim();
+            const passInput = document.getElementById("login-password").value.trim();
+            const errBox = document.getElementById("login-error-msg");
+            const succBox = document.getElementById("login-success-msg");
+
+            errBox.classList.add("hidden");
+
+            // Authenticate with MEMBER datastore
+            const member = MEMBER_DATASTORE.find(m => m.mobileNumber === mobileInput);
+
+            if (member && member.password === passInput) {
+                currentMember = member;
+                succBox.classList.remove("hidden");
+                
+                // Update UI state
+                document.getElementById("nav-user-name").textContent = `${member.firstName} ${member.lastName}`;
+                document.getElementById("nav-user-id").textContent = `ID: ${member.memberId}`;
+                document.getElementById("user-status-badge").classList.add("hidden");
+                document.getElementById("logged-in-user-info").classList.remove("hidden");
+
+                showToast("IUC-001: Authenticated successfully!");
+
+                setTimeout(() => {
+                    document.getElementById("section-login").classList.add("hidden");
+                    openCategorySelectionPage();
+                }, 1000);
+
+            } else {
+                // IUC-001 Step 3: Wrong Password
+                errBox.classList.remove("hidden");
+                document.getElementById("login-error-text").textContent = "Password does not match or mobile not found. Please try again.";
+            }
+        }
+
+        function showForgotPasswordScreen() {
+            document.getElementById("login-form-container").classList.add("hidden");
+            document.getElementById("forgot-password-container").classList.remove("hidden");
+            document.getElementById("forgot-step-1").classList.remove("hidden");
+            document.getElementById("forgot-step-2").classList.add("hidden");
+            document.getElementById("forgot-step-3").classList.add("hidden");
+        }
+
+        function hideForgotPasswordScreen() {
+            document.getElementById("forgot-password-container").classList.add("hidden");
+            document.getElementById("login-form-container").classList.remove("hidden");
+        }
+
+        function handleSendSMS() {
+            const mobile = document.getElementById("forgot-mobile").value.trim();
+            const member = MEMBER_DATASTORE.find(m => m.mobileNumber === mobile);
+
+            if (member) {
+                document.getElementById("forgot-step-1").classList.add("hidden");
+                document.getElementById("forgot-step-2").classList.remove("hidden");
+                showToast("SMS System: Verification code sent!");
+            } else {
+                alert("Mobile number not found in Member datastore.");
+            }
+        }
+
+        function handleVerifyCode() {
+            const inputCode = document.getElementById("forgot-code-input").value.trim();
+            const simulatedCode = document.getElementById("simulated-sms-code").textContent;
+
+            if (inputCode === simulatedCode) {
+                document.getElementById("forgot-step-2").classList.add("hidden");
+                document.getElementById("forgot-step-3").classList.remove("hidden");
+            } else {
+                alert("Invalid verification code. Please enter: " + simulatedCode);
+            }
+        }
+
+        function handleUpdatePasswordAndLogin() {
+            const newPass = document.getElementById("forgot-new-password").value.trim();
+            if (!newPass) {
+                alert("Please enter a new password.");
+                return;
+            }
+
+            // Update Member datastore
+            const mobile = document.getElementById("forgot-mobile").value.trim();
+            const member = MEMBER_DATASTORE.find(m => m.mobileNumber === mobile);
+            if (member) {
+                member.password = newPass;
+                showToast("Password updated successfully! Logging in...");
+                document.getElementById("login-password").value = newPass;
+                hideForgotPasswordScreen();
+                handleLoginSubmit();
+            }
+        }
+
+        function handleLogout() {
+            currentMember = null;
+            cart = [];
+            document.getElementById("logged-in-user-info").classList.add("hidden");
+            document.getElementById("user-status-badge").classList.remove("hidden");
+            
+            // Reset sections
+            document.getElementById("section-category-selection").classList.add("hidden");
+            document.getElementById("section-ordering").classList.add("hidden");
+            document.getElementById("section-order-summary").classList.add("hidden");
+            document.getElementById("section-receipt").classList.add("hidden");
+            document.getElementById("section-login").classList.remove("hidden");
+            document.getElementById("login-success-msg").classList.add("hidden");
+
+            setProcessStep(1, "IUC-001", "Login as member");
+            showToast("Logged out from system.");
+        }
+
+        function resetApp() {
+            if (currentMember) {
+                document.getElementById("section-order-summary").classList.add("hidden");
+                document.getElementById("section-receipt").classList.add("hidden");
+                document.getElementById("section-ordering").classList.add("hidden");
+                openCategorySelectionPage();
+            } else {
+                handleLogout();
+            }
+        }
+
+        // ========================================================
+        // 4. UC-002 SEPARATE CATEGORY SELECTION & MENU DISPLAY
+        // ========================================================
+
+        function openCategorySelectionPage() {
+            document.getElementById("section-login").classList.add("hidden");
+            document.getElementById("section-ordering").classList.add("hidden");
+            document.getElementById("section-category-selection").classList.remove("hidden");
+            
+            renderCategoryCards();
+            setProcessStep(2, "UC-002", "System lists dessert categories (HK, Chinese, Western)");
+        }
+
+        function renderCategoryCards() {
+            const categories = [
+                { id: "HK", title: "HK Desserts", desc: "Traditional Hong Kong sweet soups, sago & mango delights", icon: "fa-bowl-food" },
+                { id: "Chinese", title: "Chinese Desserts", desc: "Warm nourishing soups, pastes & herbal treats", icon: "fa-fire-burner" },
+                { id: "Western", title: "Western Desserts", desc: "Cakes, puddings, lava cakes & mousses", icon: "fa-cake-candles" }
+            ];
+
+            const container = document.getElementById("category-cards-container");
+            container.innerHTML = "";
+
+            categories.forEach(cat => {
+                const isSelected = pendingSelectedCategory === cat.id;
+                const card = document.createElement("div");
+                card.className = `p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center space-y-3 ${
+                    isSelected 
+                        ? "border-forest-700 bg-forest-50/50 shadow-md ring-2 ring-forest-500/20" 
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                }`;
+                card.onclick = () => {
+                    pendingSelectedCategory = cat.id;
+                    renderCategoryCards();
+                };
+
+                card.innerHTML = `
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl ${isSelected ? 'bg-forest-700 text-white' : 'bg-slate-100 text-slate-600'}">
+                        <i class="fa-solid ${cat.icon}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">${cat.title}</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">${cat.desc}</p>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-xs font-semibold ${isSelected ? 'text-forest-700' : 'text-slate-400'}">
+                            ${isSelected ? '<i class="fa-solid fa-circle-check"></i> Selected' : 'Click to Select'}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function confirmCategorySelection() {
+            activeCategory = pendingSelectedCategory;
+            document.getElementById("section-category-selection").classList.add("hidden");
+            document.getElementById("section-ordering").classList.remove("hidden");
+
+            document.getElementById("active-cat-badge").textContent = activeCategory;
+            document.getElementById("active-cat-title").textContent = `${activeCategory} Desserts Menu`;
+
+            renderDesserts();
+            setProcessStep(3, "UC-002", `Selected category "${activeCategory}" & viewing menu`);
+            showToast(`Loaded dessert menu for category: ${activeCategory}`);
+        }
+
+        function backToCategorySelection() {
+            openCategorySelectionPage();
+        }
+
+        function renderDesserts() {
+            const grid = document.getElementById("dessert-grid");
+            grid.innerHTML = "";
+
+            const filtered = DESSERT_DATASTORE.filter(d => d.category === activeCategory);
+
+            document.getElementById("item-count-badge").textContent = `${filtered.length} Items Available`;
+
+            filtered.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="relative h-36 bg-slate-100 overflow-hidden">
+                            <img src="${item.thumbnail}" alt="${item.name}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 right-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded font-medium">
+                                ${item.category}
+                            </span>
+                        </div>
+                        <div class="p-3.5">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-bold text-slate-800 text-sm line-clamp-1">${item.name}</h4>
+                                <span class="font-bold text-forest-700 text-sm">$${item.price}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">${item.description}</p>
+                        </div>
+                    </div>
+                    <div class="p-3.5 pt-0 flex space-x-2">
+                        <button onclick="openDessertModal('${item.dessertId}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-1.5 rounded-lg text-xs transition flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-eye text-[11px]"></i>
+                            <span>View Details</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ========================================================
+        // 5. UC-002 DESSERT DETAILS MODAL & CART (PURCHASE LIST)
+        // ========================================================
+
+        function openDessertModal(dessertId) {
+            const item = DESSERT_DATASTORE.find(d => d.dessertId === dessertId);
+            if (!item) return;
+
+            activeModalDessert = item;
+            currentModalQty = 1;
+
+            document.getElementById("modal-img").src = item.thumbnail;
+            document.getElementById("modal-title").textContent = item.name;
+            document.getElementById("modal-price").textContent = `$${item.price}`;
+            document.getElementById("modal-category").textContent = item.category;
+            document.getElementById("modal-description").textContent = item.description;
+            document.getElementById("modal-qty").textContent = currentModalQty;
+
+            document.getElementById("dessert-modal").classList.remove("hidden");
+            setProcessStep(4, "UC-002", "View details (ingredients & nutrition facts)");
+        }
+
+        function closeModal() {
+            document.getElementById("dessert-modal").classList.add("hidden");
+            activeModalDessert = null;
+        }
+
+        function adjustModalQty(delta) {
+            currentModalQty = Math.max(1, currentModalQty + delta);
+            document.getElementById("modal-qty").textContent = currentModalQty;
+        }
+
+        function addModalItemToCart() {
+            if (!activeModalDessert) return;
+
+            const existing = cart.find(c => c.dessert.dessertId === activeModalDessert.dessertId);
+            if (existing) {
+                existing.quantity += currentModalQty;
+            } else {
+                cart.push({
+                    dessert: activeModalDessert,
+                    quantity: currentModalQty
+                });
+            }
+
+            closeModal();
+            renderCart();
+            setProcessStep(5, "UC-002", "Specified quantity & inserted into purchase list");
+            showToast(`Added ${activeModalDessert.name} to purchase list.`);
+        }
+
+        function updateCartQty(dessertId, delta) {
+            const index = cart.findIndex(c => c.dessert.dessertId === dessertId);
+            if (index !== -1) {
+                cart[index].quantity += delta;
+                if (cart[index].quantity <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById("cart-items-container");
+            const countBadge = document.getElementById("cart-item-count");
+            container.innerHTML = "";
+
+            let totalItems = 0;
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-slate-400 text-xs">
+                        <i class="fa-solid fa-cart-flatbed text-3xl mb-2 text-slate-300 block"></i>
+                        Your purchase list is currently empty. Select a dessert to add items.
+                    </div>
+                `;
+            } else {
+                cart.forEach(item => {
+                    const itemTotal = item.dessert.price * item.quantity;
+                    subtotal += itemTotal;
+                    totalItems += item.quantity;
+
+                    const row = document.createElement("div");
+                    row.className = "py-2 flex items-center justify-between text-xs";
+                    row.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <span class="font-bold text-slate-800 block">${item.dessert.name}</span>
+                            <span class="text-slate-400 text-[10px]">${item.dessert.category} · $${item.dessert.price} each</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="flex items-center border rounded">
+                                <button onclick="updateCartQty('${item.dessert.dessertId}', -1)" class="px-1.5 py-0.5 bg-slate-100 font-bold">-</button>
+                                <span class="px-2 font-semibold text-slate-700">${item.quantity}</span>
+                                <button onclick="updateCartQty('${item.dessert.dessertId}', 1)" class="px-1.5 py-0.5 bg-slate-100 font-bold">+</button>
+                            </div>
+                            <span class="font-bold text-slate-800 w-10 text-right">$${itemTotal}</span>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+
+            countBadge.textContent = `${totalItems} Items`;
+            document.getElementById("cart-subtotal").textContent = `$${subtotal}`;
+            document.getElementById("cart-total").textContent = `$${subtotal}`;
+        }
+
+        // ========================================================
+        // 6. UC-002 CONFIRM ORDER & CREDIT CARD CLEARING
+        // ========================================================
+
+        function handleConfirmOrder() {
+            if (cart.length === 0) {
+                alert("Your purchase list is empty! Please select at least one dessert.");
+                return;
+            }
+
+            const ccNumber = document.getElementById("credit-card-input").value.trim();
+            if (!ccNumber || ccNumber.length < 12) {
+                alert("Please provide a valid credit card number.");
+                return;
+            }
+
+            // Step 8: Check availability
+            const unavailable = cart.filter(c => !c.dessert.availability);
+            if (unavailable.length > 0) {
+                alert("Some desserts in your list are currently unavailable.");
+                return;
+            }
+
+            // Step 9: Verify credit card with Clearing House
+            showToast("Verifying credit card with Clearing House...");
+
+            setTimeout(() => {
+                // Step 10: Insert into ORDER and ORDER_LINE datastores
+                const newOrderId = Math.floor(4400100 + Math.random() * 900).toString();
+                const dateObj = new Date();
+                const dateStr = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+                const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                let orderTotal = 0;
+                const lines = cart.map((c, idx) => {
+                    const linePrice = c.dessert.price * c.quantity;
+                    orderTotal += linePrice;
+                    return {
+                        orderlineId: `${newOrderId}-${idx + 1}`,
+                        dessertId: c.dessert.dessertId,
+                        name: c.dessert.name,
+                        category: c.dessert.category,
+                        quantity: c.quantity,
+                        price: c.dessert.price
+                    };
+                });
+
+                const orderRecord = {
+                    orderId: newOrderId,
+                    orderDate: dateStr,
+                    orderTime: timeStr,
+                    orderTotal: orderTotal,
+                    creditCardNumber: ccNumber,
+                    status: "Submitted",
+                    memberId: currentMember.memberId,
+                    memberName: `${currentMember.firstName} ${currentMember.lastName}`,
+                    lines: lines
+                };
+
+                ORDER_DATASTORE.push(orderRecord);
+                currentOrder = orderRecord;
+
+                // Step 10 notification
+                showToast("Order submitted successfully!");
+
+                // Step 11: Display order information summary
+                displayOrderSummary(orderRecord);
+
+            }, 800);
+        }
+
+        function displayOrderSummary(order) {
+            document.getElementById("section-ordering").classList.add("hidden");
+            document.getElementById("section-order-summary").classList.remove("hidden");
+
+            document.getElementById("summary-order-id").textContent = order.orderId;
+            document.getElementById("summary-member-id").textContent = order.memberId;
+            document.getElementById("summary-member-name").textContent = order.memberName;
+            document.getElementById("summary-order-datetime").textContent = `${order.orderDate} ${order.orderTime}`;
+            document.getElementById("summary-cc-number").textContent = `**** **** **** ${order.creditCardNumber.slice(-4)}`;
+            document.getElementById("summary-order-total").textContent = `$${order.orderTotal}`;
+
+            const tbody = document.getElementById("summary-order-lines-body");
+            tbody.innerHTML = "";
+
+            order.lines.forEach(line => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-mono text-slate-500">${line.orderlineId}</td>
+                    <td class="p-2.5 font-semibold text-slate-800">${line.name}</td>
+                    <td class="p-2.5 text-slate-600">${line.category}</td>
+                    <td class="p-2.5 text-center font-bold text-slate-800">${line.quantity}</td>
+                    <td class="p-2.5 text-right font-medium text-slate-700">$${line.price}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            setProcessStep(6, "UC-002", "Order submitted & datastores updated");
+        }
+
+        // ========================================================
+        // 7. EUC-001 GENERATE RECEIPT FLOW
+        // ========================================================
+
+        function triggerEUC001Receipt() {
+            setProcessStep(7, "EUC-001", "Generate receipt of this order");
+
+            // Use active order or fall back to sample matching requirement image
+            const targetOrder = currentOrder || PREPOPULATED_SAMPLE_ORDER;
+
+            document.getElementById("receipt-member-name").textContent = targetOrder.memberName;
+            document.getElementById("receipt-member-id").textContent = targetOrder.memberId;
+            document.getElementById("receipt-order-id").textContent = targetOrder.orderId;
+            document.getElementById("receipt-order-date").textContent = `${targetOrder.orderDate} ${targetOrder.orderTime}`;
+            document.getElementById("receipt-order-total").textContent = `$${targetOrder.orderTotal}`;
+
+            const tbody = document.getElementById("receipt-particulars-body");
+            tbody.innerHTML = "";
+
+            targetOrder.lines.forEach(line => {
+                const tr = document.createElement("tr");
+                tr.className = "border-b border-slate-900";
+                tr.innerHTML = `
+                    <td class="border-r-2 border-slate-900 p-2 text-center font-mono">${line.orderlineId}</td>
+                    <td class="border-r-2 border-slate-900 p-2 font-medium">${line.name}</td>
+                    <td class="border-r-2 border-slate-900 p-2 text-center">${line.category}</td>
+                    <td class="border-r-2 border-slate-900 p-2 text-center">${line.quantity}</td>
+                    <td class="p-2 text-center">${line.price}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("section-order-summary").classList.add("hidden");
+            document.getElementById("section-receipt").classList.remove("hidden");
+
+            showToast("EUC-001: Generated clean official receipt.");
+        }
+
+        function backToOrderSummary() {
+            document.getElementById("section-receipt").classList.add("hidden");
+            document.getElementById("section-order-summary").classList.remove("hidden");
+            setProcessStep(6, "UC-002", "Order submitted & datastores updated");
+        }
+
+        // Bind initial setup on window load
+        window.onload = function() {
+            renderCategoryCards();
+        };
+    </script>
+</body>
+</html>

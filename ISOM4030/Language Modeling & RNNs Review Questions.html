@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Modeling and RNNs: Review Questions</title>
+<style>
+:root{
+  --bg:#f6f7f5; --surface:#fff; --text:#1d2523; --muted:#5d6966; --line:#dfe4e1;
+  --accent:#0f6b66; --accent-soft:#e3f1ef;
+  --ok:#17693a; --ok-bg:#e4f4ea; --bad:#a3262a; --bad-bg:#fbe9ea;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:28px 18px 80px}
+header h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;margin:14px 0 6px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.bar .prog{margin-left:auto;color:var(--muted);font-size:.9rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 13px;min-height:38px}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:#0b5753;color:#fff}
+button:focus-visible,.opt:focus-within{outline:3px solid #7cc4be;outline-offset:2px}
+h2.topic{font-size:1.1rem;margin:34px 0 4px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px;margin-top:14px}
+.stem{display:flex;gap:10px;font-weight:600;margin:0 0 12px}
+.stem .stxt{min-width:0;flex:1}
+.stem ul{margin:8px 0;padding-left:22px;font-weight:400}
+.stem li{margin:4px 0}
+.stem .n{color:var(--accent);min-width:1.8em}
+.opts{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff}
+.opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.opt:focus-visible{outline:3px solid #7cc4be;outline-offset:2px}
+.opt.correct,.opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong,.opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.otxt{min-width:0;flex:1}
+.code{margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;overflow-x:auto;background:#f1f4f2;border-radius:6px;padding:8px 10px}
+.opt.correct .code{background:#cfeadb}.opt.wrong .code{background:#f6d6d8}
+.bar .prog{font-weight:600;color:var(--text)}
+.opt input{margin-top:5px;accent-color:var(--accent)}
+.opt .ltr{font-weight:700;min-width:1.4em;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.revealed .opt{cursor:default}
+.revealed .opt:hover{background:#fff;border-color:var(--line)}
+.revealed .opt.sel{background:#fff}
+.revealed .opt.correct,.revealed .opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.revealed .opt.wrong,.revealed .opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.tag{margin-left:auto;font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:8px}
+.correct .tag{color:var(--ok)} .wrong .tag{color:var(--bad)}
+.gloss{color:var(--muted);font-weight:400;font-style:normal}
+.stem .gloss{font-weight:400}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.why{margin-top:12px;padding:10px 12px;border-left:4px solid var(--ok);background:var(--ok-bg);border-radius:6px;font-size:.95rem}
+.why[hidden]{display:none}
+footer{margin-top:40px;color:var(--muted);font-size:.9rem}
+@media(max-width:520px){.tag{display:none}.q{padding:14px 12px}}
+@media(prefers-reduced-motion:no-preference){.opt{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Language Modeling and RNNs: Review Questions</h1>
+  <p>Click an option to check your answer. Options are shuffled each time.</p>
+</header>
+<div class="bar">
+  <button id="shuffleBtn" class="primary">Shuffle again</button>
+  <button id="revealBtn">Show all answers</button>
+  <span class="prog" id="score" aria-live="polite"></span>
+</div>
+<main id="root"></main>
+</div>
+
+<script>
+const DATA = [{"topic":"Topic 10 — Language Modeling and RNNs","items":[{"q":"A language model receives the partial sentence “The pilot checked the …”. Before sampling or selecting the next token, what does the model compute?","o":["A vocabulary index obtained by taking the largest component of the hidden state directly.","A probability distribution over the vocabulary, conditioned on the preceding tokens.","A probability distribution over the words already present in the input sentence.","A single next-token prediction, with probabilities computed only if sampling is requested."],"c":1},{"q":"A vanilla RNN has an input dimension of 20 and a hidden size of 4. At each time step, a dense output layer maps the hidden state to 12 output units. Assuming one bias vector for the recurrent layer and one for the output layer, how many trainable parameters does the model have?","o":["144","112","160","156"],"c":2},{"q":"A vocabulary contains the words “engine”, “motor”, and “banana”. Which representation is most likely to place “engine” and “motor” close together because they occur in similar contexts?","o":["Dense word embeddings learned from a suitable text corpus.","One-hot vectors, because words with similar meanings share nonzero coordinates.","Integer token IDs, because a small numerical difference between IDs indicates semantic similarity.","Fixed random word vectors, because dense representations automatically capture contextual similarity."],"c":0},{"q":"A word-level language model uses the special tokens [UNK], [END], and [PAD]. Which option correctly describes their intended roles?","o":["[UNK] represents missing context; [END] marks the end of a batch; [PAD] marks the end of a sentence.","[UNK] replaces low-probability predictions; [END] marks truncated inputs; [PAD] represents unseen words.","[UNK] represents unseen words; [END] fills unused positions; [PAD] signals sequence termination.","[UNK] represents out-of-vocabulary words; [END] signals sequence termination; [PAD] fills unused positions when batching sequences."],"c":3},{"q":"A word-level language model uses a fixed vocabulary with an [UNK] token. During preprocessing, two different out-of-vocabulary words are both replaced with [UNK]. What is the main consequence?","o":["The model creates a separate embedding for each word while retaining the same token ID.","The words receive the same token ID and embedding, so their original identities are no longer directly distinguishable from the encoded input.","The model can recover their original identities from the probability assigned to [UNK].","The words are excluded from the input sequence but remain separate targets in the output vocabulary."],"c":1},{"q":"At a particular time step, the true next token is “run”. An RNN language model assigns it a probability of 0.25. Using natural logarithms, what is the cross-entropy loss for that time step?","o":["−ln(0.75) ≈ 0.288","−0.25 ln(0.25) ≈ 0.347","−ln(0.25) ≈ 1.386","ln(0.25) ≈ −1.386"],"c":2},{"q":"Why can a vanilla RNN produce different final hidden states for “dog bites man” and “man bites dog”, even though the sentences contain the same words?","o":["Each hidden state depends on both the current input and the previous hidden state, making the sequence of updates order-sensitive.","The RNN assigns a separate recurrent weight matrix to each word position.","The final hidden state depends only on the last word, so the two sentences produce different states.","Each word has a different embedding at each sequence position, even without positional information being supplied."],"c":0},{"q":"A training sequence contains T valid next-token targets, followed by padding positions. If the training objective is the mean cross-entropy per valid target token, how should its loss be computed?","o":["Sum the losses over valid positions and divide by the total number of positions, including padding.","Sum the losses over valid positions without dividing by T.","Average the losses over all positions, treating [PAD] as an ordinary target token.","Average the losses over the T valid target tokens, excluding padding positions."],"c":3},{"q":"During text generation, an RNN processes token xₜ, updates its hidden state to hₜ, and samples token xₜ₊₁ from its output distribution. What happens next?","o":["It processes xₜ₊₁ using the initial hidden state so that each prediction is independent.","It processes xₜ₊₁ together with hₜ to obtain the next hidden state and output distribution.","It uses the entire output probability vector as the next input instead of the sampled token.","It updates its weights using xₜ₊₁ as a ground-truth label before generating another token."],"c":1},{"q":"In Keras, a recurrent layer can be defined as SimpleRNN(64) without specifying the number of time steps in that constructor. Which statement best explains this?","o":["Keras pads or truncates every input sequence to 64 time steps automatically.","The layer creates a separate set of recurrent weights for each time step when it receives an input.","The layer reuses the same weights at every time step, so sequence length affects computation but not the number of recurrent parameters.","The layer always processes a fixed number of time steps equal to its number of hidden units."],"c":2},{"q":"You load pretrained vectors into a Keras Embedding layer and want to keep those vectors unchanged while training the rest of the model. Which approach achieves this?","o":["Set trainable=False on the embedding layer before compiling and training the model.","Set mask_zero=True on the embedding layer while leaving it trainable.","Initialize the layer with pretrained vectors while leaving its default training settings unchanged.","Set the optimizer’s learning rate to zero for the entire model."],"c":0},{"q":"You are building a binary sentiment classifier for customer reviews. Each input batch contains integer token sequences with shape (batch_size, sequence_length). The vocabulary size is 10,000, the embedding dimension is 100, and the RNN has 64 hidden units. Which Keras Sequential model produces exactly one probability per review, with output shape (batch_size, 1)?","o":["Sequential([\n    Embedding(10000, 100),\n    SimpleRNN(64, return_sequences=True),\n    Dense(1, activation=\"sigmoid\")\n])","Sequential([\n    Embedding(10000, 100),\n    SimpleRNN(64),\n    Dense(2, activation=\"softmax\")\n])","Sequential([\n    Embedding(10000, 100),\n    SimpleRNN(64, return_sequences=True),\n    Dense(2, activation=\"softmax\")\n])","Sequential([\n    Embedding(10000, 100),\n    SimpleRNN(64),\n    Dense(1, activation=\"sigmoid\")\n])"],"c":3}]}];
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const root = document.getElementById("root");
+let answered = 0, right = 0;
+
+function updateScore(){
+  document.getElementById("score").textContent = answered ? `Score: ${right} / ${answered}` : "";
+}
+
+function render(){
+  answered = right = 0; updateScore();
+  root.innerHTML = "";
+  let n = 0;
+  DATA.forEach(t => {
+    root.insertAdjacentHTML("beforeend", `<h2 class="topic">${esc(t.topic)}</h2>`);
+    t.items.forEach(it => {
+      n++;
+      const opts = shuffle(it.o.map((text,k)=>({text, ok:k===it.c, html:!!it.html})));
+      const q = document.createElement("section");
+      q.className = "q";
+      q.innerHTML = `<div class="stem"><span class="n">${n}.</span><span class="stxt">${it.html?it.q:esc(it.q)}</span></div>` +
+        `<div class="opts">` + opts.map((o,k)=>`<div class="opt" role="button" tabindex="0" data-c="${o.ok}"><span class="ltr">${"ABCD"[k]}.</span><span class="otxt">${o.text.includes("\n")?`<pre class="code">${esc(o.text)}</pre>`:(o.html?o.text:esc(o.text))}</span></div>`).join("") + `</div>`;
+      q.querySelectorAll(".opt").forEach(el => {
+        const pick = () => {
+          if(q.dataset.done) return;
+          q.dataset.done = 1; answered++;
+          if(el.dataset.c === "true") right++; else el.classList.add("wrong");
+          q.querySelector('[data-c="true"]').classList.add("correct");
+          updateScore();
+        };
+        el.onclick = pick;
+        el.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+      });
+      root.appendChild(q);
+    });
+  });
+}
+function reveal(){
+  document.querySelectorAll('[data-c="true"]').forEach(e => e.classList.add("correct"));
+}
+document.getElementById("shuffleBtn").onclick = () => { render(); scrollTo(0,0); };
+document.getElementById("revealBtn").onclick = reveal;
+render();
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  const DEFAULT_LINE_HEIGHT = 16;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  const PICK_CAPABILITIES = ["pick"];
+  const PICK_CHAIN_LENGTH = 4;
+  const PICK_MAX_TEXT_CHARS = 120;
+  const PICK_MAX_HTML_CHARS = 300;
+
+  function truncate(value, maxChars) {
+    return value.length > maxChars ? value.slice(0, maxChars - 1) + "…" : value;
+  }
+
+  function isPickableElement(element) {
+    return (
+      element instanceof Element &&
+      element !== document.documentElement &&
+      element !== document.body
+    );
+  }
+
+  function resolvePickTarget(x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    const element = document.elementFromPoint(x, y);
+    return isPickableElement(element) ? element.closest("svg") || element : null;
+  }
+
+  function pickLabel(element) {
+    if (element.id) return element.localName + "#" + element.id;
+    return [element.localName].concat(Array.from(element.classList).slice(0, 2)).join(".");
+  }
+
+  // Only attributes that help find the element in source. data-* values and URL
+  // query strings or fragments can carry tokens.
+  const PICK_ATTRIBUTES = new Set([
+    "id",
+    "class",
+    "name",
+    "type",
+    "role",
+    "alt",
+    "aria-label",
+    "href",
+    "src",
+  ]);
+
+  function pickAttributeValue(attribute) {
+    return attribute.name === "href" || attribute.name === "src"
+      ? attribute.value.split(/[?#]/)[0]
+      : attribute.value;
+  }
+
+  function describePickElement(element) {
+    const chain = [];
+    for (
+      let current = element;
+      isPickableElement(current) && chain.length < PICK_CHAIN_LENGTH;
+      current = current.parentElement
+    ) {
+      chain.unshift(current);
+    }
+    const attributes = Array.from(element.attributes)
+      .filter((attribute) => PICK_ATTRIBUTES.has(attribute.name))
+      .map((attribute) => ` ${attribute.name}="${pickAttributeValue(attribute).replace(/"/g, "&quot;")}"`)
+      .join("");
+    const text = (element.innerText || element.textContent || "").replace(/\s+/g, " ").trim();
+    return {
+      chain: chain.map(pickLabel),
+      html: truncate(`<${element.localName}${attributes}>`, PICK_MAX_HTML_CHARS),
+      text: text ? truncate(text, PICK_MAX_TEXT_CHARS) : undefined,
+    };
+  }
+
+  // Hover asks once per frame, and innerText on a large section forces layout,
+  // so only the rect is re-read while the pointer stays on the same element.
+  // Clicks ask for fresh details since the page may have changed the element.
+  let lastPick = null;
+
+  function describePickTarget(element, fresh) {
+    if (fresh || lastPick?.element !== element) {
+      lastPick = { element, details: describePickElement(element) };
+    }
+    const rect = element.getBoundingClientRect();
+    return {
+      rect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
+      ...lastPick.details,
+    };
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      capabilities: PICK_CAPABILITIES,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_PICK") {
+      const element = resolvePickTarget(event.data.x, event.data.y);
+      postToTrustedTop({
+        type: "INLINE_EDIT_PICK_RESULT",
+        seq: event.data.seq,
+        target: element ? describePickTarget(element, event.data.fresh === true) : null,
+      });
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_BY") {
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!scrollForwarding || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      if (deltaMode !== 0 && deltaMode !== 1 && deltaMode !== 2) return;
+      const lineHeight =
+        parseFloat(getComputedStyle(document.documentElement).lineHeight) || DEFAULT_LINE_HEIGHT;
+      const scaleX = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerWidth : 1;
+      const scaleY = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerHeight : 1;
+      // The selection overlay receives the wheel event instead of this iframe.
+      // Instant scrolling preserves trackpad deltas even on smooth-scroll sites.
+      window.scrollBy({ left: deltaX * scaleX, top: deltaY * scaleY, behavior: "instant" });
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>

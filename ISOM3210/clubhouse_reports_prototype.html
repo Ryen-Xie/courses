@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Residence Club House - Management Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+            .card-shadow { box-shadow: none; border: 1px solid #ccc; }
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #f59e0b;
+            color: #d97706;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500 p-2 rounded-lg text-slate-900 font-bold">
+                    <i class="fa-solid fa-building-user text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Royal Residence Club House</h1>
+                    <p class="text-xs text-slate-400">Management Information System (UC-006 Managerial Reports)</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3 mt-2 sm:mt-0">
+                <span class="text-xs bg-slate-800 text-amber-400 px-3 py-1 rounded-full border border-amber-500/30 font-medium">
+                    <i class="fa-solid fa-user-shield mr-1"></i> Manager View
+                </span>
+                <button onclick="exportCSV()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded text-sm font-medium border border-slate-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-csv"></i> Export CSV
+                </button>
+                <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded text-sm font-semibold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> Print / PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Global Filter Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4 no-print">
+            <div class="flex items-center flex-wrap gap-3">
+                <label for="report-period" class="text-xs font-bold uppercase text-slate-500 tracking-wider">Report Period:</label>
+                <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded border border-slate-200 text-sm">
+                    <i class="fa-solid fa-calendar-days text-amber-600"></i>
+                    <span class="font-medium text-slate-700" id="period-display">Monthly Report (October 1, 2026 – October 31, 2026)</span>
+                </div>
+                <select id="period-select" onchange="updatePeriodLabel(this.value)" class="border rounded px-2 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-600">
+                    <option value="Oct2026" selected>Current Month (Oct 2026)</option>
+                    <option value="Sep2026">Previous Month (Sep 2026)</option>
+                    <option value="Q32026">Quarter 3 2026</option>
+                </select>
+            </div>
+            <div class="text-xs text-slate-500 flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                Generated on: <span class="font-semibold text-slate-700">2026-10-18 08:30 HKT</span>
+            </div>
+        </div>
+
+        <!-- Executive Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 no-print">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-lg">
+                    <i class="fa-solid fa-calendar-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Today's Bookings</p>
+                    <p class="text-2xl font-bold text-slate-800">25</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-700 rounded-lg">
+                    <i class="fa-solid fa-trophy text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Top Facility (Oct)</p>
+                    <p class="text-base font-bold text-slate-800 truncate">Badminton Court A</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-lg">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Avg Monthly Utilization</p>
+                    <p class="text-2xl font-bold text-slate-800">58.4%</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-700 rounded-lg">
+                    <i class="fa-solid fa-clock text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Monthly Total Bookings</p>
+                    <p class="text-2xl font-bold text-slate-800">834</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-slate-200 flex space-x-6 text-sm font-medium text-slate-500 no-print">
+            <button onclick="switchTab('all')" id="tab-all" class="tab-btn active pb-3 px-1">All Reports</button>
+            <button onclick="switchTab('rpt1')" id="tab-rpt1" class="tab-btn pb-3 px-1">Report 1: Today's Reservations</button>
+            <button onclick="switchTab('rpt2')" id="tab-rpt2" class="tab-btn pb-3 px-1">Report 2: Top 10 Facilities</button>
+            <button onclick="switchTab('rpt3')" id="tab-rpt3" class="tab-btn pb-3 px-1">Report 3: Facility Utilization</button>
+        </div>
+
+        <!-- REPORT 1: Today's Reservations -->
+        <section id="section-rpt1" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-shadow">
+            <div class="border-b border-slate-100 p-5 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day text-amber-600"></i> Report 1: Today's Reservations
+                    </h2>
+                    <p class="text-xs text-slate-500">Real-time status of reservations for today (<span id="today-date-text">2026-10-18</span>)</p>
+                </div>
+                <div class="flex gap-2 no-print">
+                    <span class="px-2.5 py-1 text-xs rounded-full bg-emerald-100 text-emerald-800 font-medium">Completed: 14</span>
+                    <span class="px-2.5 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-medium">Arrived: 3</span>
+                    <span class="px-2.5 py-1 text-xs rounded-full bg-amber-100 text-amber-800 font-medium">Confirmed: 8</span>
+                </div>
+            </div>
+            <div class="p-5 overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider border-b border-slate-200">
+                            <th class="p-3">Res ID</th>
+                            <th class="p-3">Member ID</th>
+                            <th class="p-3">Member Name</th>
+                            <th class="p-3">Facility</th>
+                            <th class="p-3">Timeslot</th>
+                            <th class="p-3">Fee ($)</th>
+                            <th class="p-3">Special Request</th>
+                            <th class="p-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-mono text-xs font-semibold text-slate-900">RSV-20261018-001</td>
+                            <td class="p-3 font-mono text-xs">M-1042</td>
+                            <td class="p-3">Chan Tai Man</td>
+                            <td class="p-3 font-medium text-slate-900">Badminton Court A</td>
+                            <td class="p-3">09:00 - 10:00</td>
+                            <td class="p-3">$50.00</td>
+                            <td class="p-3 text-slate-400 italic">None</td>
+                            <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">Completed</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-mono text-xs font-semibold text-slate-900">RSV-20261018-002</td>
+                            <td class="p-3 font-mono text-xs">M-0891</td>
+                            <td class="p-3">Wong Lai Ying</td>
+                            <td class="p-3 font-medium text-slate-900">Tennis Court 1</td>
+                            <td class="p-3">10:00 - 12:00</td>
+                            <td class="p-3">$160.00</td>
+                            <td class="p-3 text-slate-600">Extra court lighting requested</td>
+                            <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">Completed</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-mono text-xs font-semibold text-slate-900">RSV-20261018-003</td>
+                            <td class="p-3 font-mono text-xs">M-1205</td>
+                            <td class="p-3">Lee Ming</td>
+                            <td class="p-3 font-medium text-slate-900">BBQ Pit #3</td>
+                            <td class="p-3">12:00 - 16:00</td>
+                            <td class="p-3">$200.00</td>
+                            <td class="p-3 text-slate-600">Extra trash bins near pit</td>
+                            <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Arrived</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-mono text-xs font-semibold text-slate-900">RSV-20261018-004</td>
+                            <td class="p-3 font-mono text-xs">M-0331</td>
+                            <td class="p-3">Cheung Kwok Keung</td>
+                            <td class="p-3 font-medium text-slate-900">Mahjong Room 2</td>
+                            <td class="p-3">14:00 - 18:00</td>
+                            <td class="p-3">$120.00</td>
+                            <td class="p-3 text-slate-400 italic">None</td>
+                            <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">Confirmed</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-mono text-xs font-semibold text-slate-900">RSV-20261018-005</td>
+                            <td class="p-3 font-mono text-xs">M-1520</td>
+                            <td class="p-3">Sarah Taylor</td>
+                            <td class="p-3 font-medium text-slate-900">Function Room B</td>
+                            <td class="p-3">15:00 - 18:00</td>
+                            <td class="p-3">$450.00</td>
+                            <td class="p-3 text-slate-600">Setup 30 chairs & AV system</td>
+                            <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">Confirmed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- REPORT 2: Top 10 Popular Facilities (One Month Period) -->
+        <section id="section-rpt2" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-shadow">
+            <div class="border-b border-slate-100 p-5 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-amber-500"></i> Report 2: Top 10 Popular Facilities
+                    </h2>
+                    <p class="text-xs text-slate-500">Ranked by total number of reservations | <span class="font-semibold text-amber-700">Period: Monthly (October 1 – October 31, 2026)</span></p>
+                </div>
+                <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold no-print">1 Month Summary</span>
+            </div>
+            
+            <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Bar Chart View -->
+                <div class="lg:col-span-6 bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Reservation Count Ranking</h3>
+                    <div class="relative h-72 w-full">
+                        <canvas id="topFacilitiesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Structured Ranking Table (Removed Total Hours) -->
+                <div class="lg:col-span-6 overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider border-b border-slate-200">
+                                <th class="p-3 text-center">Rank</th>
+                                <th class="p-3">Facility Name</th>
+                                <th class="p-3 text-right">Total Reservations</th>
+                                <th class="p-3 text-right">% Share</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr class="hover:bg-slate-50 bg-amber-50/40">
+                                <td class="p-3 text-center font-bold text-amber-600"><i class="fa-solid fa-medal mr-1"></i>1</td>
+                                <td class="p-3 font-semibold text-slate-900">Badminton Court A</td>
+                                <td class="p-3 text-right font-bold text-slate-900">142</td>
+                                <td class="p-3 text-right text-xs font-semibold text-slate-500">17.0%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-slate-50/50">
+                                <td class="p-3 text-center font-bold text-slate-500"><i class="fa-solid fa-medal mr-1"></i>2</td>
+                                <td class="p-3 font-semibold text-slate-900">Badminton Court B</td>
+                                <td class="p-3 text-right font-bold text-slate-900">128</td>
+                                <td class="p-3 text-right text-xs font-semibold text-slate-500">15.3%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-amber-700/5">
+                                <td class="p-3 text-center font-bold text-amber-800"><i class="fa-solid fa-medal mr-1"></i>3</td>
+                                <td class="p-3 font-semibold text-slate-900">BBQ Pit #1</td>
+                                <td class="p-3 text-right font-bold text-slate-900">95</td>
+                                <td class="p-3 text-right text-xs font-semibold text-slate-500">11.4%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">4</td>
+                                <td class="p-3 font-medium">Tennis Court 1</td>
+                                <td class="p-3 text-right font-semibold">88</td>
+                                <td class="p-3 text-right text-xs text-slate-500">10.5%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">5</td>
+                                <td class="p-3 font-medium">Mahjong Room 1</td>
+                                <td class="p-3 text-right font-semibold">76</td>
+                                <td class="p-3 text-right text-xs text-slate-500">9.1%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">6</td>
+                                <td class="p-3 font-medium">Swimming Lane 1</td>
+                                <td class="p-3 text-right font-semibold">64</td>
+                                <td class="p-3 text-right text-xs text-slate-500">7.7%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">7</td>
+                                <td class="p-3 font-medium">Function Room A</td>
+                                <td class="p-3 text-right font-semibold">42</td>
+                                <td class="p-3 text-right text-xs text-slate-500">5.0%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">8</td>
+                                <td class="p-3 font-medium">BBQ Pit #2</td>
+                                <td class="p-3 text-right font-semibold">39</td>
+                                <td class="p-3 text-right text-xs text-slate-500">4.7%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">9</td>
+                                <td class="p-3 font-medium">Music Practice Room</td>
+                                <td class="p-3 text-right font-semibold">31</td>
+                                <td class="p-3 text-right text-xs text-slate-500">3.7%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 text-center font-bold text-slate-400">10</td>
+                                <td class="p-3 font-medium">Squash Court 1</td>
+                                <td class="p-3 text-right font-semibold">27</td>
+                                <td class="p-3 text-right text-xs text-slate-500">3.2%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPORT 3: Facility Utilization Rate (One Month Period, Matching Structure) -->
+        <section id="section-rpt3" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-shadow">
+            <div class="border-b border-slate-100 p-5 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-600"></i> Report 3: Utilization Rate of Facilities
+                    </h2>
+                    <p class="text-xs text-slate-500">Ratio of reserved timeslots against total operating capacity | <span class="font-semibold text-indigo-700">Period: Monthly (October 1 – October 31, 2026)</span></p>
+                </div>
+                <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-semibold no-print">Utilization Metric (%)</span>
+            </div>
+
+            <div class="p-5 overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider border-b border-slate-200">
+                            <th class="p-3 text-center">Rank</th>
+                            <th class="p-3">Facility Name</th>
+                            <th class="p-3 text-center">Monthly Available Capacity</th>
+                            <th class="p-3 text-center">Booked Slots</th>
+                            <th class="p-3 text-right">Utilization Rate (%)</th>
+                            <th class="p-3 w-48">Visual Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">1</td>
+                            <td class="p-3 font-semibold text-slate-900">Badminton Court A</td>
+                            <td class="p-3 text-center text-slate-500">310 hrs</td>
+                            <td class="p-3 text-center font-medium">273 hrs</td>
+                            <td class="p-3 text-right font-bold text-emerald-600">88.1%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 88.1%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">2</td>
+                            <td class="p-3 font-semibold text-slate-900">Badminton Court B</td>
+                            <td class="p-3 text-center text-slate-500">310 hrs</td>
+                            <td class="p-3 text-center font-medium">254 hrs</td>
+                            <td class="p-3 text-right font-bold text-emerald-600">81.9%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 81.9%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">3</td>
+                            <td class="p-3 font-semibold text-slate-900">BBQ Pit #1</td>
+                            <td class="p-3 text-center text-slate-500">248 hrs</td>
+                            <td class="p-3 text-center font-medium">196 hrs</td>
+                            <td class="p-3 text-right font-bold text-emerald-600">79.0%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 79.0%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">4</td>
+                            <td class="p-3 font-medium text-slate-900">Mahjong Room 1</td>
+                            <td class="p-3 text-center text-slate-500">310 hrs</td>
+                            <td class="p-3 text-center font-medium">202 hrs</td>
+                            <td class="p-3 text-right font-bold text-indigo-600">65.2%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-indigo-500 h-2.5 rounded-full" style="width: 65.2%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">5</td>
+                            <td class="p-3 font-medium text-slate-900">Tennis Court 1</td>
+                            <td class="p-3 text-center text-slate-500">310 hrs</td>
+                            <td class="p-3 text-center font-medium">161 hrs</td>
+                            <td class="p-3 text-right font-bold text-amber-600">51.9%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-amber-500 h-2.5 rounded-full" style="width: 51.9%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">6</td>
+                            <td class="p-3 font-medium text-slate-900">Function Room A</td>
+                            <td class="p-3 text-center text-slate-500">248 hrs</td>
+                            <td class="p-3 text-center font-medium">102 hrs</td>
+                            <td class="p-3 text-right font-bold text-amber-600">41.1%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-amber-500 h-2.5 rounded-full" style="width: 41.1%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center font-bold text-slate-500">7</td>
+                            <td class="p-3 font-medium text-slate-900">Squash Court 1</td>
+                            <td class="p-3 text-center text-slate-500">310 hrs</td>
+                            <td class="p-3 text-center font-medium">68 hrs</td>
+                            <td class="p-3 text-right font-bold text-rose-600">21.9%</td>
+                            <td class="p-3">
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div class="bg-rose-500 h-2.5 rounded-full" style="width: 21.9%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-6 text-xs text-slate-400 no-print border-t border-slate-200 mt-8">
+        Royal Residence Club House Management System &copy; 2026 | Managerial Report Module (UC-006)
+    </footer>
+
+    <script>
+        // Render Top 10 Facilities Chart for Report 2
+        const ctx = document.getElementById('topFacilitiesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Badminton A', 'Badminton B', 'BBQ Pit 1', 'Tennis Ct 1', 'Mahjong 1', 'Swim Lane 1', 'Function A', 'BBQ Pit 2', 'Music Rm', 'Squash 1'],
+                datasets: [{
+                    label: 'Total Reservations (Monthly)',
+                    data: [142, 128, 95, 88, 76, 64, 42, 39, 31, 27],
+                    backgroundColor: 'rgba(217, 119, 6, 0.85)',
+                    borderColor: 'rgba(180, 83, 9, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        title: { display: true, text: 'Reservations', font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // Tab Switcher Logic
+        function switchTab(tab) {
+            const tabs = ['all', 'rpt1', 'rpt2', 'rpt3'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                if (btn) btn.classList.remove('active');
+            });
+            document.getElementById('tab-' + tab).classList.add('active');
+
+            const sec1 = document.getElementById('section-rpt1');
+            const sec2 = document.getElementById('section-rpt2');
+            const sec3 = document.getElementById('section-rpt3');
+
+            if (tab === 'all') {
+                sec1.style.display = 'block';
+                sec2.style.display = 'block';
+                sec3.style.display = 'block';
+            } else if (tab === 'rpt1') {
+                sec1.style.display = 'block';
+                sec2.style.display = 'none';
+                sec3.style.display = 'none';
+            } else if (tab === 'rpt2') {
+                sec1.style.display = 'none';
+                sec2.style.display = 'block';
+                sec3.style.display = 'none';
+            } else if (tab === 'rpt3') {
+                sec1.style.display = 'none';
+                sec2.style.display = 'none';
+                sec3.style.display = 'block';
+            }
+        }
+
+        // Date Range Display Handler
+        function updatePeriodLabel(val) {
+            const label = document.getElementById('period-display');
+            if (val === 'Oct2026') {
+                label.innerText = "Monthly Report (October 1, 2026 – October 31, 2026)";
+            } else if (val === 'Sep2026') {
+                label.innerText = "Monthly Report (September 1, 2026 – September 30, 2026)";
+            } else if (val === 'Q32026') {
+                label.innerText = "Quarterly Report (July 1, 2026 – September 30, 2026)";
+            }
+        }
+
+        // CSV Download Simulation
+        function exportCSV() {
+            const csvContent = "data:text/csv;charset=utf-8,Report,Facility,Metric,Value\nReport 2,Badminton Court A,Reservations,142\nReport 2,Badminton Court B,Reservations,128\nReport 3,Badminton Court A,Utilization Rate,88.1%\nReport 3,Badminton Court B,Utilization Rate,81.9%";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Clubhouse_Management_Report_Oct2026.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

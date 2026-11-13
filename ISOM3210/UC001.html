@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UC-001 Register as a Member - Workflow Visualizer & Prototype</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .step-item { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 h-full flex flex-col lg:flex-row overflow-hidden">
+
+    <!-- Workflow Visualizer Sidebar -->
+    <aside class="w-full lg:w-96 bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col p-4 overflow-y-auto">
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="bg-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-user-plus text-white text-lg"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-sm tracking-wide text-white">UC-001: Register Member</h1>
+                    <span class="bg-indigo-500/20 text-indigo-300 text-[10px] px-2 py-0.5 rounded font-semibold">High Priority</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Royal Residence Club House System</p>
+            </div>
+        </div>
+
+        <!-- System Specifications Accordion / Meta -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 mb-4 space-y-2 text-xs">
+            <div class="flex justify-between text-slate-400">
+                <span>Actor:</span>
+                <span class="text-slate-200 font-medium">Resident [P]</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+                <span>Non-Functional:</span>
+                <span class="text-slate-200 font-medium">Available 24 hours</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+                <span>Assumption:</span>
+                <span class="text-slate-200 font-medium">Understands Chinese & English</span>
+            </div>
+        </div>
+
+        <!-- Step List Tracker -->
+        <div class="space-y-2 flex-1 text-xs">
+            <!-- Pre-condition / Step 1 -->
+            <div id="w-step-0" class="step-item p-2.5 rounded-lg border border-slate-800 bg-slate-950/40">
+                <div class="flex justify-between font-semibold text-slate-400 mb-0.5">
+                    <span>PRE-CONDITION / STEP 1</span>
+                    <span class="badge px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400">Pending</span>
+                </div>
+                <p class="text-slate-200">Welcome Screen & Click "Register as a member"</p>
+            </div>
+
+            <!-- Steps 2 & 3 -->
+            <div id="w-step-2" class="step-item p-2.5 rounded-lg border border-slate-800 bg-slate-950/40">
+                <div class="flex justify-between font-semibold text-slate-400 mb-0.5">
+                    <span>STEPS 2 & 3</span>
+                    <span class="badge px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400">Pending</span>
+                </div>
+                <p class="text-slate-200">Username/Password Choice & Uniqueness Check</p>
+            </div>
+
+            <!-- Steps 4 & 5 -->
+            <div id="w-step-4" class="step-item p-2.5 rounded-lg border border-slate-800 bg-slate-950/40">
+                <div class="flex justify-between font-semibold text-slate-400 mb-0.5">
+                    <span>STEPS 4 & 5</span>
+                    <span class="badge px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400">Pending</span>
+                </div>
+                <p class="text-slate-200">Fill Personal Particulars & Submit Form</p>
+            </div>
+
+            <!-- Step 6 -->
+            <div id="w-step-6" class="step-item p-2.5 rounded-lg border border-slate-800 bg-slate-950/40">
+                <div class="flex justify-between font-semibold text-slate-400 mb-0.5">
+                    <span>STEP 6</span>
+                    <span class="badge px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400">Pending</span>
+                </div>
+                <p class="text-slate-200">Personal Information Validation Check</p>
+            </div>
+
+            <!-- Steps 7 & 8 -->
+            <div id="w-step-7" class="step-item p-2.5 rounded-lg border border-slate-800 bg-slate-950/40">
+                <div class="flex justify-between font-semibold text-slate-400 mb-0.5">
+                    <span>STEPS 7 & 8 / POST</span>
+                    <span class="badge px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400">Pending</span>
+                </div>
+                <p class="text-slate-200">Member Datastore Insertion & Success Notification</p>
+            </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+            <span class="text-slate-400">Prototype Status</span>
+            <button onclick="resetWorkflow()" class="text-indigo-400 hover:text-indigo-300 font-medium underline">Restart UC-001</button>
+        </div>
+    </aside>
+
+    <!-- Main Interactive Viewport -->
+    <main class="flex-1 bg-slate-950 flex flex-col items-center justify-center p-4 lg:p-8 overflow-y-auto relative">
+        <div class="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden p-6 lg:p-8 transition-all">
+
+            <!-- SCREEN 1: Pre-conditions & Step 1 (Welcome Screen) -->
+            <div id="screen-welcome" class="sim-screen space-y-6 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-inner">
+                    <i class="fa-solid fa-building-shield text-2xl"></i>
+                </div>
+                <div class="space-y-2">
+                    <span class="text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">Pre-condition Satisfied</span>
+                    <h2 class="text-xl font-bold text-white">Welcome to Royal Residence club house system</h2>
+                    <p class="text-xs text-slate-400">Please select one of the available choices to proceed with the system.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button onclick="startRegistrationFlow()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-4 rounded-xl transition-all shadow-lg shadow-indigo-600/30 text-xs flex flex-col items-center justify-center space-y-2 group">
+                        <i class="fa-solid fa-user-plus text-lg group-hover:scale-110 transition-transform"></i>
+                        <span>Register as a member (Step 1)</span>
+                    </button>
+                    <button onclick="alertLoginSim()" class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 font-medium p-4 rounded-xl transition-all text-xs flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-right-to-bracket text-lg text-slate-400"></i>
+                        <span>Login</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-500 pt-2">Available 24 hours daily • English / 中文 supported</p>
+            </div>
+
+            <!-- SCREEN 2: Steps 2 & 3 (Username & Password with Uniqueness Check) -->
+            <div id="screen-credentials" class="sim-screen hidden space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Choose Username & Password</h2>
+                        <p class="text-xs text-slate-400">Steps 2 & 3: Define credentials for your membership account</p>
+                    </div>
+                    <span class="text-[11px] bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-medium">Step 2 of 8</span>
+                </div>
+
+                <!-- Username Taken Error Banner (Step 3.1) -->
+                <div id="username-error-banner" class="hidden bg-rose-950/40 border border-rose-500/50 rounded-xl p-3 text-xs text-rose-300 flex items-start space-x-2.5">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400 mt-0.5"></i>
+                    <div>
+                        <span class="font-bold block">Step 3.1: Username Taken</span>
+                        <span>The username you entered is already taken by others. Cannot be used. Please choose another username (Step 3.2).</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Desired Username <span class="text-rose-400">*</span></label>
+                        <input type="text" id="reg-username" placeholder="e.g. chan_tai_man, admin, taken" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <span class="text-[10px] text-slate-500 mt-1 block">Tip: Enter <strong class="text-slate-400">admin</strong> or <strong class="text-slate-400">taken</strong> to test Step 3 uniqueness rejection branch.</span>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Password <span class="text-rose-400">*</span></label>
+                        <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button onclick="backToWelcome()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium">Back</button>
+                    <button onclick="submitCredentials()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/30 text-xs flex items-center justify-center space-x-2">
+                        <span>Continue to Personal Particulars (Step 4)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: Steps 4 & 5 (Personal Particulars Form) -->
+            <div id="screen-particulars" class="sim-screen hidden space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Resident Personal Particulars</h2>
+                        <p class="text-xs text-slate-400">Steps 4 & 5: Fill in required identity and contact records</p>
+                    </div>
+                    <span class="text-[11px] bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-medium">Step 4 & 5</span>
+                </div>
+
+                <!-- Validation Error Banner (Step 6.1 & 6.2) -->
+                <div id="validation-error-banner" class="hidden bg-rose-950/40 border border-rose-500/50 rounded-xl p-3 text-xs text-rose-300 flex items-start space-x-2.5">
+                    <i class="fa-solid fa-circle-exclamation text-rose-400 mt-0.5"></i>
+                    <div>
+                        <span class="font-bold block">Step 6.1: Invalid Personal Information</span>
+                        <span id="validation-error-msg">Some information entered is invalid. Invalid fields are highlighted below for modification (Step 6.2). Back to Step 4.</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Full Name (English) <span class="text-rose-400">*</span></label>
+                            <input type="text" id="input-name" value="Chan Tai Man" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Resident Card Number <span class="text-rose-400">*</span></label>
+                            <input type="text" id="input-card" value="RC-88492" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">HKID Number <span class="text-rose-400">*</span></label>
+                            <input type="text" id="input-hkid" value="A123456(7)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Contact Phone <span class="text-rose-400">*</span></label>
+                            <input type="text" id="input-phone" value="91234567" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Residence Address <span class="text-rose-400">*</span></label>
+                        <input type="text" id="input-address" value="Flat B, 12/F, Tower 3, Royal Residence" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Other Personal Particulars (Optional)</label>
+                        <input type="text" id="input-other" value="Emergency Contact: Mrs. Chan (62345678)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <span class="text-[10px] text-slate-500 mt-1 block">Tip: Clear any field or type <strong class="text-slate-400">invalid</strong> to test Step 6 validation error and red field highlighting.</span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button onclick="backToCredentials()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium">Back</button>
+                    <button onclick="submitParticularsForm()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/30 text-xs flex items-center justify-center space-x-2">
+                        <span>Complete Form & Select "Submit" (Step 5)</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: Steps 7 & 8 & Post-conditions (Success Screen) -->
+            <div id="screen-success" class="sim-screen hidden space-y-6 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 animate-bounce">
+                    <i class="fa-solid fa-circle-check text-2xl"></i>
+                </div>
+                <div class="space-y-2">
+                    <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Step 7 & 8 Completed</span>
+                    <h2 class="text-xl font-bold text-white">Registration completed</h2>
+                    <p class="text-xs text-slate-400">System successfully inserted member’s record into the Member datastore and notified resident.</p>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs text-left space-y-2">
+                    <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                        <span class="text-slate-500">Username</span>
+                        <span id="res-summary-user" class="font-mono text-indigo-400">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                        <span class="text-slate-500">Resident Card No.</span>
+                        <span id="res-summary-card" class="font-medium text-slate-200">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                        <span class="text-slate-500">Datastore Status</span>
+                        <span class="font-medium text-emerald-400">Inserted into Member DB</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Post-condition</span>
+                        <span class="font-medium text-slate-300">Ready to return to main page</span>
+                    </div>
+                </div>
+
+                <button onclick="resetWorkflow()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/30 text-xs flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-house mr-1"></i>
+                    <span>Back to the main page (Post-condition)</span>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Application Logic Script -->
+    <script>
+        let currentScreen = 'welcome';
+
+        function updateWorkflowTracker(stepIndex) {
+            const mapping = {
+                0: 'w-step-0',
+                2: 'w-step-2',
+                4: 'w-step-4',
+                6: 'w-step-6',
+                7: 'w-step-7'
+            };
+
+            const steps = [0, 2, 4, 6, 7];
+            steps.forEach(s => {
+                const el = document.getElementById(`w-step-${s}`);
+                if (!el) return;
+                const badge = el.querySelector('.badge');
+                
+                el.classList.remove('border-indigo-500', 'bg-indigo-950/40', 'border-emerald-500', 'bg-emerald-950/20');
+
+                if (s < stepIndex) {
+                    el.classList.add('border-emerald-500/50', 'bg-emerald-950/10');
+                    badge.className = 'badge px-1.5 py-0.5 rounded text-[9px] bg-emerald-500 text-white font-semibold';
+                    badge.innerText = 'Completed';
+                } else if (s === stepIndex) {
+                    el.classList.add('border-indigo-500', 'bg-indigo-950/40', 'shadow-md', 'shadow-indigo-500/10');
+                    badge.className = 'badge px-1.5 py-0.5 rounded text-[9px] bg-indigo-500 text-white font-semibold animate-pulse';
+                    badge.innerText = 'Active';
+                } else {
+                    el.classList.add('border-slate-800', 'bg-slate-950/40');
+                    badge.className = 'badge px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400';
+                    badge.innerText = 'Pending';
+                }
+            });
+        }
+
+        function showScreen(screenId, trackerStep) {
+            document.querySelectorAll('.sim-screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+            updateWorkflowTracker(trackerStep);
+        }
+
+        function startRegistrationFlow() {
+            // Step 1: Resident clicks "Register as a member"
+            showScreen('credentials', 2);
+        }
+
+        function backToWelcome() {
+            showScreen('welcome', 0);
+        }
+
+        function alertLoginSim() {
+            // For prototype completeness when clicking Login on welcome screen
+            const banner = document.getElementById('username-error-banner');
+            banner.classList.remove('hidden');
+            banner.querySelector('span:nth-child(2)').innerText = "Login action selected from welcome screen. Proceeding with registration flow for demonstration.";
+            setTimeout(() => { banner.classList.add('hidden'); }, 4000);
+            showScreen('credentials', 2);
+        }
+
+        function submitCredentials() {
+            const usernameInput = document.getElementById('reg-username').value.trim().toLowerCase();
+            const passwordInput = document.getElementById('reg-password').value.trim();
+            const errorBanner = document.getElementById('username-error-banner');
+
+            // Step 3: If username is taken by others (simulating 'admin' or 'taken' as taken)
+            if (usernameInput === 'admin' || usernameInput === 'taken' || usernameInput === '') {
+                errorBanner.classList.remove('hidden');
+                document.getElementById('reg-username').classList.add('border-rose-500', 'bg-rose-950/20');
+                return; // Step 3.2: Back to Step 2
+            }
+
+            errorBanner.classList.add('hidden');
+            document.getElementById('reg-username').classList.remove('border-rose-500', 'bg-rose-950/20');
+
+            // Proceed to Step 4
+            showScreen('particulars', 4);
+        }
+
+        function backToCredentials() {
+            showScreen('credentials', 2);
+        }
+
+        function submitParticularsForm() {
+            // Step 6: Validate personal information
+            const name = document.getElementById('input-name');
+            const card = document.getElementById('input-card');
+            const hkid = document.getElementById('input-hkid');
+            const address = document.getElementById('input-address');
+            const phone = document.getElementById('input-phone');
+            const valBanner = document.getElementById('validation-error-banner');
+
+            // Clear highlights first
+            [name, card, hkid, address, phone].forEach(el => el.classList.remove('border-rose-500', 'bg-rose-950/20'));
+
+            let hasError = false;
+            let errorFields = [];
+
+            if (!name.value.trim() || name.value.toLowerCase().includes('invalid')) {
+                name.classList.add('border-rose-500', 'bg-rose-950/20');
+                errorFields.push('Full Name');
+                hasError = true;
+            }
+            if (!card.value.trim()) {
+                card.classList.add('border-rose-500', 'bg-rose-950/20');
+                errorFields.push('Resident Card Number');
+                hasError = true;
+            }
+            if (!hkid.value.trim() || hkid.value.length < 5) {
+                hkid.classList.add('border-rose-500', 'bg-rose-950/20');
+                errorFields.push('HKID');
+                hasError = true;
+            }
+            if (!address.value.trim()) {
+                address.classList.add('border-rose-500', 'bg-rose-950/20');
+                errorFields.push('Address');
+                hasError = true;
+            }
+
+            if (hasError) {
+                // Step 6.1 & 6.2: System prompts error and highlights invalid information
+                document.getElementById('validation-error-msg').innerText = `Step 6.1: Invalid information in (${errorFields.join(', ')}). Step 6.2: Highlighted below. Back to Step 4.`;
+                valBanner.classList.remove('hidden');
+                return; // 6.3 Back to Step 4
+            }
+
+            valBanner.classList.add('hidden');
+
+            // Step 7 & 8: Insert into Member datastore & Notify success
+            document.getElementById('res-summary-user').innerText = document.getElementById('reg-username').value;
+            document.getElementById('res-summary-card').innerText = card.value;
+
+            showScreen('success', 7);
+        }
+
+        function resetWorkflow() {
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-password').value = '';
+            document.getElementById('username-error-banner').classList.add('hidden');
+            document.getElementById('validation-error-banner').classList.add('hidden');
+            showScreen('welcome', 0);
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            showScreen('welcome', 0);
+        };
+    </script>
+</body>
+</html>
