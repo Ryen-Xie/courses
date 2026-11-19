@@ -7,10 +7,10 @@
 | [ISOM3210](./ISOM3210) | ISOM3210 (L1-L3) - Information Systems Analysis and Design | 85 | 65.1 MB |
 | [ISOM3310](./ISOM3310) | ISOM3310 (L1) - e-Business Management and Web Analytics | 18 | 75.9 MB |
 | [ISOM4030](./ISOM4030) | ISOM4030 (L1) - Deep Learning for Business Applications | 65 | 107.9 MB |
-| [ISOM4040](./ISOM4040) | ISOM4040 (L1) - Digital Strategy and Transformation | 34 | 34.9 MB |
+| [ISOM4040](./ISOM4040) | ISOM4040 (L1) - Digital Strategy and Transformation | 35 | 34.9 MB |
 | [MGMT2130](./MGMT2130) | MGMT2130 (L01-L04) - Business Ethics and Social Responsibility | 37 | 39.3 MB |
 | [SOSC1859](./SOSC1859) | SOSC1859 (L1) - Exploring Society | 35 | 56.3 MB |
-| **合计** | | **274** | **379.3 MB** |
+| **合计** | | **275** | **379.4 MB** |
 
 ## 目录结构
 
