@@ -4,13 +4,13 @@
 
 | 课程目录 | 课程名称 | 文件数 | 大小 |
 |---|---|---|---|
-| [ISOM3210](./ISOM3210) | ISOM3210 (L1-L3) - Information Systems Analysis and Design | 84 | 65.0 MB |
+| [ISOM3210](./ISOM3210) | ISOM3210 (L1-L3) - Information Systems Analysis and Design | 85 | 65.1 MB |
 | [ISOM3310](./ISOM3310) | ISOM3310 (L1) - e-Business Management and Web Analytics | 18 | 75.9 MB |
-| [ISOM4030](./ISOM4030) | ISOM4030 (L1) - Deep Learning for Business Applications | 61 | 99.5 MB |
-| [ISOM4040](./ISOM4040) | ISOM4040 (L1) - Digital Strategy and Transformation | 33 | 32.4 MB |
-| [MGMT2130](./MGMT2130) | MGMT2130 (L01-L04) - Business Ethics and Social Responsibility | 33 | 38.4 MB |
-| [SOSC1859](./SOSC1859) | SOSC1859 (L1) - Exploring Society | 33 | 54.6 MB |
-| **合计** | | **262** | **366.0 MB** |
+| [ISOM4030](./ISOM4030) | ISOM4030 (L1) - Deep Learning for Business Applications | 65 | 107.9 MB |
+| [ISOM4040](./ISOM4040) | ISOM4040 (L1) - Digital Strategy and Transformation | 34 | 34.9 MB |
+| [MGMT2130](./MGMT2130) | MGMT2130 (L01-L04) - Business Ethics and Social Responsibility | 37 | 39.3 MB |
+| [SOSC1859](./SOSC1859) | SOSC1859 (L1) - Exploring Society | 35 | 56.3 MB |
+| **合计** | | **274** | **379.3 MB** |
 
 ## 目录结构
 
@@ -33,6 +33,7 @@ courses/
 - ISOM3210、ISOM4030 沿用 2026-11-10 已完成的下载结果；ISOM3310、ISOM4040、MGMT2130、SOSC1859 于 2026-11-13 下载。
 - SOSC1859 课程未配置 Modules，改由课程 Files 目录下载，其中同名同内容的 `140 seating plan.xlsx` 已去重。
 - 文件名保留教师的原始命名，仅去掉浏览器重复下载产生的 ` (1)`、` (2)` 后缀。
+- 2026-11-19 增量归档：对照 2026-11-13 基线，仅补录此后新上传或更新的 13 个课件，已归档的旧文件不重复下载。
 
 ## 备注
 

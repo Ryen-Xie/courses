@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISOM 4030 — Topic 12 Review Quiz: Machine Translation, Seq2Seq, &amp; Attention</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+:root{
+  --bg:#f6f7f5; --surface:#fff; --text:#1d2523; --muted:#5d6966; --line:#dfe4e1;
+  --accent:#0f6b66; --accent-soft:#e3f1ef;
+  --ok:#17693a; --ok-bg:#e4f4ea; --bad:#a3262a; --bad-bg:#fbe9ea;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:28px 18px 80px}
+header h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;margin:14px 0 6px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.bar .prog{margin-left:auto;color:var(--muted);font-size:.9rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 13px;min-height:38px}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:#0b5753;color:#fff}
+button:focus-visible,.opt:focus-within{outline:3px solid #7cc4be;outline-offset:2px}
+h2.topic{font-size:1.1rem;margin:34px 0 4px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px;margin-top:14px}
+.stem{display:flex;gap:10px;font-weight:600;margin:0 0 12px}
+.stem .stxt{min-width:0;flex:1}
+.stem ul{margin:8px 0;padding-left:22px;font-weight:400}
+.stem li{margin:4px 0}
+.stem .n{color:var(--accent);min-width:1.8em}
+.opts{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff}
+.opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.opt:focus-visible{outline:3px solid #7cc4be;outline-offset:2px}
+.opt.correct,.opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong,.opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.otxt{min-width:0;flex:1}
+.code{margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;overflow-x:auto;background:#f1f4f2;border-radius:6px;padding:8px 10px}
+.opt.correct .code{background:#cfeadb}.opt.wrong .code{background:#f6d6d8}
+.bar .prog{font-weight:600;color:var(--text)}
+.opt input{margin-top:5px;accent-color:var(--accent)}
+.opt .ltr{font-weight:700;min-width:1.4em;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.revealed .opt{cursor:default}
+.revealed .opt:hover{background:#fff;border-color:var(--line)}
+.revealed .opt.sel{background:#fff}
+.revealed .opt.correct,.revealed .opt.correct:hover{border-color:var(--ok);background:var(--ok-bg)}
+.revealed .opt.wrong,.revealed .opt.wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.tag{margin-left:auto;font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:8px}
+.correct .tag{color:var(--ok)} .wrong .tag{color:var(--bad)}
+.gloss{color:var(--muted);font-weight:400;font-style:normal}
+.stem .gloss{font-weight:400}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.why{margin-top:12px;padding:10px 12px;border-left:4px solid var(--ok);background:var(--ok-bg);border-radius:6px;font-size:.95rem}
+.why[hidden]{display:none}
+footer{margin-top:40px;color:var(--muted);font-size:.9rem}
+@media(max-width:520px){.tag{display:none}.q{padding:14px 12px}}
+@media(prefers-reduced-motion:no-preference){.opt{transition:background .15s,border-color .15s}}
+code{font-family:Consolas,Menlo,monospace;background:#eef1ef;padding:2px 5px;border-radius:4px}
+pre.code{white-space:pre;overflow-x:auto;background:#f1f4f3;border:1px solid var(--line);padding:14px 16px;border-radius:8px;text-align:left}
+pre.code code{background:none;padding:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>ISOM 4030 — Topic 12 Review Quiz: Machine Translation, Seq2Seq, &amp; Attention</h1>
+  <p>Click an option to check your answer. Options are shuffled each time.</p>
+</header>
+<div class="bar">
+  <button id="shuffleBtn" class="primary">Shuffle again</button>
+  <button id="revealBtn">Show all answers</button>
+  <span class="prog" id="score" aria-live="polite"></span>
+</div>
+<main id="root"></main>
+</div>
+
+<script>
+const DATA = [
+  {
+    "topic": "",
+    "items": [
+      {
+        "q": "During inference (deployment) in a standard sequence-to-sequence machine translation model, how does the decoder RNN determine when to stop generating words for a translated customer review?",
+        "o": [
+          "It stops once the generated sequence matches the exact token count of the source sentence.",
+          "It continues generating tokens sequentially until it outputs a designated <code>&lt;end&gt;</code> token.",
+          "It halts as soon as the encoder RNN finishes processing the final word of the source sentence.",
+          "It terminates when the initial hidden state vector decays to all zeros."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "While training a neural machine translation model with teacher forcing on a ground-truth target sequence <code>&lt;s&gt; The package arrived &lt;e&gt;</code>, suppose the decoder mistakenly predicts \"delayed\" instead of \"arrived\" at the third decoding step. What token is fed as input into the fourth decoding step?",
+        "o": [
+          "The model's own predicted token \"delayed\", so it learns to recover from its mistakes.",
+          "The ground-truth token \"arrived\" from the target training sequence.",
+          "The <code>&lt;e&gt;</code> token, terminating the training pass early to penalize the error.",
+          "A blank padding token \"\" to mask out the misclassified step."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "You are preparing bilingual parallel sentences (English to Japanese) to train an encoder-decoder translation model, padding shorter sequences in a mini-batch with \"\" tokens. How should vocabulary construction and special start/end boundary tokens (<code>&lt;s&gt;</code>, <code>&lt;e&gt;</code>) be configured according to the standard Seq2Seq pipeline?",
+        "o": [
+          "Build a single shared vocabulary for both languages and wrap both encoder and decoder sequences with <code>&lt;s&gt;</code> and <code>&lt;e&gt;</code>.",
+          "Build separate vocabularies for the source and target languages, adding <code>&lt;s&gt;</code> to the decoder input sequence and <code>&lt;e&gt;</code> to the decoder label sequence.",
+          "Build separate vocabularies for each language, appending <code>&lt;e&gt;</code> only to the encoder input sequence to trigger decoding.",
+          "Use identical tokenizers for both languages and replace all padding tokens \"\" with <code>&lt;e&gt;</code> in the encoder input."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "A software company wants to build a tool that takes a natural language business requirement (e.g., \"Calculate monthly revenue grouped by region\") and outputs an executable Python script. Why does this task naturally fit the sequence-to-sequence framework?",
+        "o": [
+          "Both the natural language prompt and the Python code share an identical token vocabulary and grammar.",
+          "An encoder network can compress the input text into a neural representation, from which a decoder network generates the target code token by token.",
+          "Sequence-to-sequence models execute all target output steps in parallel without recurrent state dependencies.",
+          "The encoder-decoder framework requires input and output sequences to have a one-to-one word correspondence."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "Why does a vanilla sequence-to-sequence RNN without attention struggle when summarizing or translating very long financial disclosures?",
+        "o": [
+          "The encoder cannot process input sequences longer than the target vocabulary size.",
+          "All information from the entire source sequence must be compressed into a single fixed-size vector passed to the decoder.",
+          "Teacher forcing prevents gradients from flowing backward into the encoder RNN layers.",
+          "The decoder must recompute the entire encoder pass from scratch at every output step."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "In an RNN-based sequence-to-sequence model equipped with dot-product attention, how is the context vector computed and used at a specific decoding step?",
+        "o": [
+          "Softmax is applied directly to the encoder hidden states, and the highest-scoring state replaces the decoder hidden state.",
+          "Dot products between the current decoder state and all encoder states are normalized via softmax to weight a sum of encoder states, which is then concatenated with the decoder state.",
+          "All decoder states across the entire sentence are averaged together and multiplied by the final encoder hidden state.",
+          "The initial encoder state is added element-wise to the previous target word embedding before entering the softmax output layer."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "When framing the attention mechanism as an information retrieval or search problem (using Queries, Keys, and Values), how do these three components map to an RNN-based sequence-to-sequence model with attention?",
+        "o": [
+          "The source words act as Queries, while the decoder hidden state acts as both the Keys and Values.",
+          "The current decoder hidden state acts as the Query, while the encoder hidden states serve as both the Keys and the Values.",
+          "The attention scores act as Queries, the softmax weights act as Keys, and the predicted target tokens act as Values.",
+          "The final encoder state acts as the Query, previous target tokens act as Keys, and encoder states act as Values."
+        ],
+        "c": 1,
+        "html": true
+      },
+      {
+        "q": "During training of a sequence-to-sequence translation model, suppose a target sequence consists of 5 translated words followed by an <code>&lt;end&gt;</code> token (6 prediction steps in total, producing step-wise cross-entropy losses $J^{\\langle 1 \\rangle}$ through $J^{\\langle 6 \\rangle}$). How is the overall training objective computed for this sequence, and which network parameters are updated?",
+        "o": [
+          "Only $J^{\\langle 6 \\rangle}$ at the <code>&lt;end&gt;</code> token is minimized, updating exclusively the decoder RNN parameters.",
+          "Separate loss functions are required for each RNN because gradients cannot flow from the decoder back into the encoder.",
+          "The step-wise losses $\\frac{1}{6}\\sum_{t=1}^{6} J^{\\langle t \\rangle}$ are averaged across all target steps to jointly update both the encoder and decoder RNNs.",
+          "The step-wise losses are evaluated only on the encoder steps to pre-train the source representation before training the decoder."
+        ],
+        "c": 2,
+        "html": true
+      },
+      {
+        "q": "How does the context vector $c$ passed to the decoder differ between a vanilla sequence-to-sequence model (facing the encoding bottleneck) and a sequence-to-sequence model with attention?",
+        "o": [
+          "A vanilla model computes a fresh context vector at every decoding step, whereas attention reuses a single static vector throughout decoding.",
+          "Attention eliminates the context vector altogether by feeding raw one-hot source tokens directly into the decoder's softmax layer.",
+          "Both models use the exact same fixed encoder final state $h^{\\langle T \\rangle}$ as the context vector, differing only in how the initial state $s^{\\langle 0 \\rangle}$ is initialized.",
+          "A vanilla model reuses a single static vector from the final encoder state for every decoding step, whereas attention dynamically computes a new weighted-sum context vector $c^{\\langle t \\rangle}$ at each step."
+        ],
+        "c": 3,
+        "html": true
+      },
+      {
+        "q": "In the general recipe for attention (such as the architecture used in Google's RNN-based Neural Machine Translation system), why is the softmax function applied to the raw alignment scores between a query and the keys?",
+        "o": [
+          "To convert arbitrary alignment scores into non-negative attention weights that sum to 1 for taking a selective weighted summary of the values.",
+          "To clip negative values in the final context vector so they match the dimensionality of the multi-layer LSTM hidden states.",
+          "To select a single winning key as a hard one-hot index while discarding information from all other encoder positions.",
+          "To predict the next translated word directly from the source language vocabulary before passing control to the decoder."
+        ],
+        "c": 0,
+        "html": true
+      }
+    ]
+  }
+];
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const root = document.getElementById("root");
+let answered = 0, right = 0;
+
+function updateScore(){
+  document.getElementById("score").textContent = answered ? `Score: ${right} / ${answered}` : "";
+}
+
+function render(){
+  answered = right = 0; updateScore();
+  root.innerHTML = "";
+  let n = 0;
+  DATA.forEach(t => {
+    t.items.forEach(it => {
+      n++;
+      const opts = shuffle(it.o.map((text,k)=>({text, ok:k===it.c, html:!!it.html})));
+      const q = document.createElement("section");
+      q.className = "q";
+      q.innerHTML = `<div class="stem"><span class="n">${n}.</span><span class="stxt">${it.html?it.q:esc(it.q)}</span></div>` +
+        `<div class="opts">` + opts.map((o,k)=>`<div class="opt" role="button" tabindex="0" data-c="${o.ok}"><span class="ltr">${"ABCD"[k]}.</span><span class="otxt">${o.text.includes("\n")?`<pre class="code">${esc(o.text)}</pre>`:(o.html?o.text:esc(o.text))}</span></div>`).join("") + `</div>`;
+      q.querySelectorAll(".opt").forEach(el => {
+        const pick = () => {
+          if(q.dataset.done) return;
+          q.dataset.done = 1; answered++;
+          if(el.dataset.c === "true") right++; else el.classList.add("wrong");
+          q.querySelector('[data-c="true"]').classList.add("correct");
+          updateScore();
+        };
+        el.onclick = pick;
+        el.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+      });
+      root.appendChild(q);
+    });
+  });
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([root]);
+  }
+}
+function reveal(){
+  document.querySelectorAll('[data-c="true"]').forEach(e => e.classList.add("correct"));
+}
+document.getElementById("shuffleBtn").onclick = () => { render(); scrollTo(0,0); };
+document.getElementById("revealBtn").onclick = reveal;
+render();
+</script>
+</body>
+</html>
